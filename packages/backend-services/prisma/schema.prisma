@@ -1,0 +1,154 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql" // 确保这里是 postgresql
+  url      = env("DATABASE_URL")
+}
+
+// 1. 管理员 (用于后台系统)
+model Admin {
+  id           Int      @id @default(autoincrement())
+  username     String   @unique // 管理员登录名，需要唯一
+  passwordHash String // 存储哈希后的密码，不要存明文
+  name         String? // 管理员姓名（可选）
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@map("admins") // 将数据库表名映射为 admins
+}
+
+// 2. 用户 (学习平台用户)
+model User {
+  id               Int      @id @default(autoincrement())
+  phone            String   @unique // 用户手机号，需唯一
+  nickname         String? // 用户昵称
+  avatarUrl        String? // 头像链接
+  registrationDate DateTime @default(now()) // 注册时间
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  // 关系字段
+  enrollments    UserCourseEnrollment[] // 用户报名的课程 (通过中间表)
+  wrongQuestions WrongQuestion[] // 用户的错题记录
+  checkIns       CheckInRecord[] // 用户的打卡记录
+
+  @@map("users") // 数据库表名 users
+}
+
+// 3. 全部课程
+model Course {
+  id            Int      @id @default(autoincrement())
+  title         String // 课程标题
+  description   String? // 课程描述
+  coverImageUrl String? // 封面图片 URL
+  isPublished   Boolean  @default(false) // 课程是否发布/上架
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // 关系字段
+  sections    CourseSection[] // 课程包含的小节 (一对多)
+  enrollments UserCourseEnrollment[] // 报名该课程的用户 (通过中间表)
+
+  @@map("courses") // 数据库表名 courses
+}
+
+// 用户与课程的关联表 (多对多关系)
+model UserCourseEnrollment {
+  userId     Int
+  courseId   Int
+  enrolledAt DateTime @default(now()) // 报名时间
+  progress   Float    @default(0.0) // 学习进度 (例如 0.0 到 1.0)
+
+  // 关系字段
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade) // 用户删除时，关联记录也删除
+  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade) // 课程删除时，关联记录也删除
+
+  @@id([userId, courseId]) // 使用 userId 和 courseId 作为复合主键
+  @@map("user_course_enrollments")
+}
+
+// 4. 课程小节
+model CourseSection {
+  id        Int      @id @default(autoincrement())
+  title     String // 小节标题
+  content   String?  @db.Text // 小节内容，可能较长，使用 Text 类型
+  order     Int // 小节在课程中的顺序
+  courseId  Int // 外键，关联到 Course
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // 关系字段
+  course    Course            @relation(fields: [courseId], references: [id], onDelete: Cascade) // 所属课程，课程删除时小节也删除
+  questions SectionQuestion[] // 小节包含的问题 (一对多)
+
+  @@unique([courseId, order]) // 同一课程下的小节顺序必须唯一
+  @@index([courseId]) // 为外键添加索引
+  @@map("course_sections")
+}
+
+// 5. 小节问题
+model SectionQuestion {
+  id            Int      @id @default(autoincrement())
+  questionText  String   @db.Text // 问题文本
+  options       Json? // 题目选项 (例如 ["A. ...", "B. ..."] 或 [{key: "A", value: "..."}, ...])，使用 JSON 类型增加灵活性
+  correctAnswer String // 正确答案 (例如 "A" 或 对应的文本)
+  explanation   String?  @db.Text // 答案解析
+  questionType  String   @default("multiple_choice") // 问题类型 (例如 'multiple_choice', 'fill_in_blank')
+  order         Int // 问题在小节中的顺序
+  sectionId     Int // 外键，关联到 CourseSection
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // 关系字段
+  section      CourseSection   @relation(fields: [sectionId], references: [id], onDelete: Cascade) // 所属小节，小节删除时问题也删除
+  wrongEntries WrongQuestion[] // 这个问题出现在哪些用户的错题本中 (一对多)
+
+  @@unique([sectionId, order]) // 同一小节下的问题顺序必须唯一
+  @@index([sectionId]) // 为外键添加索引
+  @@map("section_questions")
+}
+
+// 6. 错题本
+model WrongQuestion {
+  id         Int      @id @default(autoincrement())
+  userId     Int // 外键，关联到 User
+  questionId Int // 外键，关联到 SectionQuestion
+  userAnswer String? // 用户当时选错的答案 (可选)
+  addedAt    DateTime @default(now()) // 添加到错题本的时间
+  notes      String?  @db.Text // 用户对错题的笔记 (可选)
+
+  // 关系字段
+  user     User            @relation(fields: [userId], references: [id], onDelete: Cascade) // 所属用户，用户删除时错题记录也删除
+  question SectionQuestion @relation(fields: [questionId], references: [id], onDelete: Cascade) // 关联的问题，问题删除时错题记录也删除
+
+  @@unique([userId, questionId]) // 一个用户对同一个问题应该只有一条错题记录
+  @@index([userId]) // 为用户 ID 添加索引，方便查询某个用户的所有错题
+  @@index([questionId]) // 为问题 ID 添加索引
+  @@map("wrong_questions")
+}
+
+// 7. 打卡记录
+model CheckInRecord {
+  id          Int      @id @default(autoincrement())
+  userId      Int // 外键，关联到 User
+  checkInDate DateTime @db.Date // 打卡日期，只关心日期，使用 Date 类型
+  timestamp   DateTime @default(now()) // 具体的打卡时间戳
+
+  // 关系字段
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade) // 所属用户，用户删除时打卡记录也删除
+
+  @@unique([userId, checkInDate]) // 一个用户一天只能打卡一次
+  @@index([userId]) // 为用户 ID 添加索引
+  @@index([checkInDate]) // 为打卡日期添加索引，方便按日期统计
+  @@map("check_in_records")
+}
