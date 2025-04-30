@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
-import { JwtModule } from '@nestjs/jwt';
 import { APP_GUARD } from '@nestjs/core';
+import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { PrismaModule } from './prisma/prisma.module';
@@ -8,19 +8,22 @@ import { UsersModule } from './users/users.module';
 import { SmsModule } from './sms/sms.module';
 import { RedisModule } from './redis/redis.module';
 import { JwtAuthGuard } from './auth/auth.guard';
-import { jwtConstants } from './auth/constants';
+import { AdminModule } from './admin/admin.module';
+import { AuthModule } from './auth/auth.module';
+import { CoursesModule } from './courses/courses.module';
 
 @Module({
   imports: [
-    JwtModule.register({
-      global: true,
-      secret: jwtConstants.secret,
-      signOptions: { expiresIn: '7d' },
+    ConfigModule.forRoot({
+      isGlobal: true,
     }),
     PrismaModule,
     UsersModule,
     SmsModule,
     RedisModule,
+    AdminModule,
+    AuthModule,
+    CoursesModule,
   ],
   controllers: [AppController],
   providers: [

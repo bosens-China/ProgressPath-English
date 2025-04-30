@@ -2,13 +2,13 @@ import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from '../prisma/prisma.service';
-import { JwtService } from '@nestjs/jwt';
+import { AuthService } from '../auth/auth.service';
 
 @Injectable()
 export class UsersService {
   constructor(
     private prisma: PrismaService,
-    private jwtService: JwtService,
+    private authService: AuthService,
   ) {}
 
   async create(createUserDto: CreateUserDto) {
@@ -46,10 +46,12 @@ export class UsersService {
         phone,
       });
     }
-    const payload = { sub: user.id, phone: user.phone };
     return {
       ...user,
-      access_token: await this.jwtService.signAsync(payload),
+      access_token: await this.authService.generateUserToken(
+        user.id,
+        user.phone,
+      ),
     };
   }
 }

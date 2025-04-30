@@ -13,7 +13,10 @@
 import { Route as rootRoute } from './routes/__root'
 import { Route as LoginImport } from './routes/login'
 import { Route as ManageImport } from './routes/_manage'
-import { Route as ManageCourseImport } from './routes/_manage/course'
+import { Route as ManageUsersImport } from './routes/_manage/users'
+import { Route as ManageSectionsImport } from './routes/_manage/sections'
+import { Route as ManageQuestionsImport } from './routes/_manage/questions'
+import { Route as ManageCoursesImport } from './routes/_manage/courses'
 
 // Create/Update Routes
 
@@ -28,9 +31,27 @@ const ManageRoute = ManageImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
-const ManageCourseRoute = ManageCourseImport.update({
-  id: '/course',
-  path: '/course',
+const ManageUsersRoute = ManageUsersImport.update({
+  id: '/users',
+  path: '/users',
+  getParentRoute: () => ManageRoute,
+} as any)
+
+const ManageSectionsRoute = ManageSectionsImport.update({
+  id: '/sections',
+  path: '/sections',
+  getParentRoute: () => ManageRoute,
+} as any)
+
+const ManageQuestionsRoute = ManageQuestionsImport.update({
+  id: '/questions',
+  path: '/questions',
+  getParentRoute: () => ManageRoute,
+} as any)
+
+const ManageCoursesRoute = ManageCoursesImport.update({
+  id: '/courses',
+  path: '/courses',
   getParentRoute: () => ManageRoute,
 } as any)
 
@@ -52,11 +73,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginImport
       parentRoute: typeof rootRoute
     }
-    '/_manage/course': {
-      id: '/_manage/course'
-      path: '/course'
-      fullPath: '/course'
-      preLoaderRoute: typeof ManageCourseImport
+    '/_manage/courses': {
+      id: '/_manage/courses'
+      path: '/courses'
+      fullPath: '/courses'
+      preLoaderRoute: typeof ManageCoursesImport
+      parentRoute: typeof ManageImport
+    }
+    '/_manage/questions': {
+      id: '/_manage/questions'
+      path: '/questions'
+      fullPath: '/questions'
+      preLoaderRoute: typeof ManageQuestionsImport
+      parentRoute: typeof ManageImport
+    }
+    '/_manage/sections': {
+      id: '/_manage/sections'
+      path: '/sections'
+      fullPath: '/sections'
+      preLoaderRoute: typeof ManageSectionsImport
+      parentRoute: typeof ManageImport
+    }
+    '/_manage/users': {
+      id: '/_manage/users'
+      path: '/users'
+      fullPath: '/users'
+      preLoaderRoute: typeof ManageUsersImport
       parentRoute: typeof ManageImport
     }
   }
@@ -65,11 +107,17 @@ declare module '@tanstack/react-router' {
 // Create and export the route tree
 
 interface ManageRouteChildren {
-  ManageCourseRoute: typeof ManageCourseRoute
+  ManageCoursesRoute: typeof ManageCoursesRoute
+  ManageQuestionsRoute: typeof ManageQuestionsRoute
+  ManageSectionsRoute: typeof ManageSectionsRoute
+  ManageUsersRoute: typeof ManageUsersRoute
 }
 
 const ManageRouteChildren: ManageRouteChildren = {
-  ManageCourseRoute: ManageCourseRoute,
+  ManageCoursesRoute: ManageCoursesRoute,
+  ManageQuestionsRoute: ManageQuestionsRoute,
+  ManageSectionsRoute: ManageSectionsRoute,
+  ManageUsersRoute: ManageUsersRoute,
 }
 
 const ManageRouteWithChildren =
@@ -78,28 +126,44 @@ const ManageRouteWithChildren =
 export interface FileRoutesByFullPath {
   '': typeof ManageRouteWithChildren
   '/login': typeof LoginRoute
-  '/course': typeof ManageCourseRoute
+  '/courses': typeof ManageCoursesRoute
+  '/questions': typeof ManageQuestionsRoute
+  '/sections': typeof ManageSectionsRoute
+  '/users': typeof ManageUsersRoute
 }
 
 export interface FileRoutesByTo {
   '': typeof ManageRouteWithChildren
   '/login': typeof LoginRoute
-  '/course': typeof ManageCourseRoute
+  '/courses': typeof ManageCoursesRoute
+  '/questions': typeof ManageQuestionsRoute
+  '/sections': typeof ManageSectionsRoute
+  '/users': typeof ManageUsersRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/_manage': typeof ManageRouteWithChildren
   '/login': typeof LoginRoute
-  '/_manage/course': typeof ManageCourseRoute
+  '/_manage/courses': typeof ManageCoursesRoute
+  '/_manage/questions': typeof ManageQuestionsRoute
+  '/_manage/sections': typeof ManageSectionsRoute
+  '/_manage/users': typeof ManageUsersRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '' | '/login' | '/course'
+  fullPaths: '' | '/login' | '/courses' | '/questions' | '/sections' | '/users'
   fileRoutesByTo: FileRoutesByTo
-  to: '' | '/login' | '/course'
-  id: '__root__' | '/_manage' | '/login' | '/_manage/course'
+  to: '' | '/login' | '/courses' | '/questions' | '/sections' | '/users'
+  id:
+    | '__root__'
+    | '/_manage'
+    | '/login'
+    | '/_manage/courses'
+    | '/_manage/questions'
+    | '/_manage/sections'
+    | '/_manage/users'
   fileRoutesById: FileRoutesById
 }
 
@@ -130,14 +194,29 @@ export const routeTree = rootRoute
     "/_manage": {
       "filePath": "_manage.tsx",
       "children": [
-        "/_manage/course"
+        "/_manage/courses",
+        "/_manage/questions",
+        "/_manage/sections",
+        "/_manage/users"
       ]
     },
     "/login": {
       "filePath": "login.tsx"
     },
-    "/_manage/course": {
-      "filePath": "_manage/course.tsx",
+    "/_manage/courses": {
+      "filePath": "_manage/courses.tsx",
+      "parent": "/_manage"
+    },
+    "/_manage/questions": {
+      "filePath": "_manage/questions.tsx",
+      "parent": "/_manage"
+    },
+    "/_manage/sections": {
+      "filePath": "_manage/sections.tsx",
+      "parent": "/_manage"
+    },
+    "/_manage/users": {
+      "filePath": "_manage/users.tsx",
       "parent": "/_manage"
     }
   }

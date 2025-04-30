@@ -1,6 +1,7 @@
 import config from '../../eslint.config.mjs';
 import reactHooks from 'eslint-plugin-react-hooks';
 import reactRefresh from 'eslint-plugin-react-refresh';
+import reactCompiler from 'eslint-plugin-react-compiler';
 
 export default [
   ...config,
@@ -13,5 +14,6 @@ export default [
     },
   },
   reactRefresh.configs.recommended,
+  reactCompiler.configs.recommended,
   { ignores: ['dist/'] },
 ];

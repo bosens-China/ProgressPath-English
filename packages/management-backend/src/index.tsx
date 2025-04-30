@@ -5,9 +5,10 @@ import 'uno.css';
 import zhCN from 'antd/locale/zh_CN';
 import 'dayjs/locale/zh-cn';
 import { ConfigProvider } from 'antd';
-// @ts-expect-error 初始化为空，所以禁止抛出错误
+// @ts-error 初始化为空，所以禁止抛出错误
 import { routeTree } from './routeTree.gen';
 import { RouterProvider, createRouter } from '@tanstack/react-router';
+import { App } from 'antd';
 
 declare module '@tanstack/react-router' {
   interface Register {
@@ -23,7 +24,9 @@ if (rootEl) {
   root.render(
     <React.StrictMode>
       <ConfigProvider locale={zhCN} theme={{ cssVar: true, hashed: false }}>
-        <RouterProvider router={router} />
+        <App>
+          <RouterProvider router={router} />
+        </App>
       </ConfigProvider>
     </React.StrictMode>,
   );
