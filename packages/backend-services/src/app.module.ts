@@ -11,6 +11,7 @@ import { JwtAuthGuard } from './auth/auth.guard';
 import { AdminModule } from './admin/admin.module';
 import { AuthModule } from './auth/auth.module';
 import { CoursesModule } from './courses/courses.module';
+import { PictureBedModule } from './picture-bed/picture-bed.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { CoursesModule } from './courses/courses.module';
     AdminModule,
     AuthModule,
     CoursesModule,
+    PictureBedModule,
   ],
   controllers: [AppController],
   providers: [
