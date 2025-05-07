@@ -12,6 +12,7 @@ import { AdminModule } from './admin/admin.module';
 import { AuthModule } from './auth/auth.module';
 import { CoursesModule } from './courses/courses.module';
 import { PictureBedModule } from './picture-bed/picture-bed.module';
+import { SectionsModule } from './sections/sections.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { PictureBedModule } from './picture-bed/picture-bed.module';
     AuthModule,
     CoursesModule,
     PictureBedModule,
+    SectionsModule,
   ],
   controllers: [AppController],
   providers: [

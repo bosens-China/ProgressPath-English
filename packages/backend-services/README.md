@@ -3,3 +3,5 @@ npx prisma db seed
 
 npx prisma migrate dev --name init_schema
 npx prisma generate
+
+nest g resource users --no-spec

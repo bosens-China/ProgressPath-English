@@ -64,6 +64,22 @@ export class CoursesService {
     });
   }
 
+  /**
+   * @description 获取所有课程的精简信息（ID 和标题）
+   * @returns Promise<Array<{ id: number; title: string }>> 包含课程ID和标题的对象数组
+   */
+  async findAllLite(): Promise<{ id: number; title: string }[]> {
+    return this.prisma.course.findMany({
+      select: {
+        id: true,
+        title: true,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+  }
+
   async findOne(id: number) {
     const course = await this.prisma.course.findUnique({
       where: { id },

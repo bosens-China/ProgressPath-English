@@ -4,6 +4,7 @@ import { pluginSvgr } from '@rsbuild/plugin-svgr';
 import { pluginBabel } from '@rsbuild/plugin-babel';
 import { UnoCSSRspackPlugin } from '@unocss/webpack/rspack';
 import { TanStackRouterRspack } from '@tanstack/router-plugin/rspack';
+import { codeInspectorPlugin } from 'code-inspector-plugin';
 
 export default defineConfig({
   plugins: [
@@ -23,6 +24,9 @@ export default defineConfig({
           // options
         }),
         TanStackRouterRspack({ target: 'react', autoCodeSplitting: true }),
+        codeInspectorPlugin({
+          bundler: 'rspack',
+        }),
       ],
     },
   },

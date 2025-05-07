@@ -82,7 +82,7 @@ model CourseSection {
   id        Int      @id @default(autoincrement())
   title     String // 小节标题
   content   String?  @db.Text // 小节内容，可能较长，使用 Text 类型
-  order     Int // 小节在课程中的顺序
+  order     Int? // 小节在课程中的顺序, 修改为可选
   courseId  Int // 外键，关联到 Course
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

@@ -54,3 +54,14 @@ export const deleteCourse = async (id: number) => {
   >(`/courses/${id}`);
   return data;
 };
+
+// 全部课程，只包含id和title
+export const getAllCourses = async () => {
+  const {
+    data: { data },
+  } =
+    await request.get<
+      GlobalApiTypes<ReturnType<CoursesController['findAllLite']>>
+    >('/courses/all-lite');
+  return data;
+};

@@ -40,6 +40,16 @@ export class CoursesController {
     return this.coursesService.findAll();
   }
 
+  /**
+   * @description 获取所有课程的精简列表（仅包含ID和标题）
+   * @returns 返回课程ID和标题的数组
+   */
+  @Get('all-lite')
+  findAllLite() {
+    // 可根据需要添加权限控制
+    return this.coursesService.findAllLite();
+  }
+
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id: number) {
     // Public access maybe? If not, add guard.

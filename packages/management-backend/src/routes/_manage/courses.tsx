@@ -300,6 +300,7 @@ function CoursesPage() {
           >
             <Upload
               name="file"
+              accept="image/*"
               customRequest={async (f) => {
                 try {
                   const data = await pictureBedUpload(f.file as File);

@@ -14,9 +14,9 @@ import { Route as rootRoute } from './routes/__root'
 import { Route as LoginImport } from './routes/login'
 import { Route as ManageImport } from './routes/_manage'
 import { Route as ManageUsersImport } from './routes/_manage/users'
-import { Route as ManageSectionsImport } from './routes/_manage/sections'
 import { Route as ManageQuestionsImport } from './routes/_manage/questions'
 import { Route as ManageCoursesImport } from './routes/_manage/courses'
+import { Route as ManageSectionsIndexImport } from './routes/_manage/sections/index'
 
 // Create/Update Routes
 
@@ -37,12 +37,6 @@ const ManageUsersRoute = ManageUsersImport.update({
   getParentRoute: () => ManageRoute,
 } as any)
 
-const ManageSectionsRoute = ManageSectionsImport.update({
-  id: '/sections',
-  path: '/sections',
-  getParentRoute: () => ManageRoute,
-} as any)
-
 const ManageQuestionsRoute = ManageQuestionsImport.update({
   id: '/questions',
   path: '/questions',
@@ -52,6 +46,12 @@ const ManageQuestionsRoute = ManageQuestionsImport.update({
 const ManageCoursesRoute = ManageCoursesImport.update({
   id: '/courses',
   path: '/courses',
+  getParentRoute: () => ManageRoute,
+} as any)
+
+const ManageSectionsIndexRoute = ManageSectionsIndexImport.update({
+  id: '/sections/',
+  path: '/sections/',
   getParentRoute: () => ManageRoute,
 } as any)
 
@@ -87,18 +87,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ManageQuestionsImport
       parentRoute: typeof ManageImport
     }
-    '/_manage/sections': {
-      id: '/_manage/sections'
-      path: '/sections'
-      fullPath: '/sections'
-      preLoaderRoute: typeof ManageSectionsImport
-      parentRoute: typeof ManageImport
-    }
     '/_manage/users': {
       id: '/_manage/users'
       path: '/users'
       fullPath: '/users'
       preLoaderRoute: typeof ManageUsersImport
+      parentRoute: typeof ManageImport
+    }
+    '/_manage/sections/': {
+      id: '/_manage/sections/'
+      path: '/sections'
+      fullPath: '/sections'
+      preLoaderRoute: typeof ManageSectionsIndexImport
       parentRoute: typeof ManageImport
     }
   }
@@ -109,15 +109,15 @@ declare module '@tanstack/react-router' {
 interface ManageRouteChildren {
   ManageCoursesRoute: typeof ManageCoursesRoute
   ManageQuestionsRoute: typeof ManageQuestionsRoute
-  ManageSectionsRoute: typeof ManageSectionsRoute
   ManageUsersRoute: typeof ManageUsersRoute
+  ManageSectionsIndexRoute: typeof ManageSectionsIndexRoute
 }
 
 const ManageRouteChildren: ManageRouteChildren = {
   ManageCoursesRoute: ManageCoursesRoute,
   ManageQuestionsRoute: ManageQuestionsRoute,
-  ManageSectionsRoute: ManageSectionsRoute,
   ManageUsersRoute: ManageUsersRoute,
+  ManageSectionsIndexRoute: ManageSectionsIndexRoute,
 }
 
 const ManageRouteWithChildren =
@@ -128,8 +128,8 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/courses': typeof ManageCoursesRoute
   '/questions': typeof ManageQuestionsRoute
-  '/sections': typeof ManageSectionsRoute
   '/users': typeof ManageUsersRoute
+  '/sections': typeof ManageSectionsIndexRoute
 }
 
 export interface FileRoutesByTo {
@@ -137,8 +137,8 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/courses': typeof ManageCoursesRoute
   '/questions': typeof ManageQuestionsRoute
-  '/sections': typeof ManageSectionsRoute
   '/users': typeof ManageUsersRoute
+  '/sections': typeof ManageSectionsIndexRoute
 }
 
 export interface FileRoutesById {
@@ -147,23 +147,23 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/_manage/courses': typeof ManageCoursesRoute
   '/_manage/questions': typeof ManageQuestionsRoute
-  '/_manage/sections': typeof ManageSectionsRoute
   '/_manage/users': typeof ManageUsersRoute
+  '/_manage/sections/': typeof ManageSectionsIndexRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '' | '/login' | '/courses' | '/questions' | '/sections' | '/users'
+  fullPaths: '' | '/login' | '/courses' | '/questions' | '/users' | '/sections'
   fileRoutesByTo: FileRoutesByTo
-  to: '' | '/login' | '/courses' | '/questions' | '/sections' | '/users'
+  to: '' | '/login' | '/courses' | '/questions' | '/users' | '/sections'
   id:
     | '__root__'
     | '/_manage'
     | '/login'
     | '/_manage/courses'
     | '/_manage/questions'
-    | '/_manage/sections'
     | '/_manage/users'
+    | '/_manage/sections/'
   fileRoutesById: FileRoutesById
 }
 
@@ -196,8 +196,8 @@ export const routeTree = rootRoute
       "children": [
         "/_manage/courses",
         "/_manage/questions",
-        "/_manage/sections",
-        "/_manage/users"
+        "/_manage/users",
+        "/_manage/sections/"
       ]
     },
     "/login": {
@@ -211,12 +211,12 @@ export const routeTree = rootRoute
       "filePath": "_manage/questions.tsx",
       "parent": "/_manage"
     },
-    "/_manage/sections": {
-      "filePath": "_manage/sections.tsx",
-      "parent": "/_manage"
-    },
     "/_manage/users": {
       "filePath": "_manage/users.tsx",
+      "parent": "/_manage"
+    },
+    "/_manage/sections/": {
+      "filePath": "_manage/sections/index.tsx",
       "parent": "/_manage"
     }
   }
