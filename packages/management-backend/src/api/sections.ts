@@ -53,3 +53,14 @@ export const deleteSection = async (id: number) => {
   >(`/sections/${id}`);
   return data;
 };
+
+// 全部小节
+export const sectionAll = async () => {
+  const {
+    data: { data },
+  } =
+    await request.get<
+      GlobalApiTypes<ReturnType<SectionsController['findAll']>>
+    >(`/sections/all`);
+  return data;
+};

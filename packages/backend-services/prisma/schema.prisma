@@ -101,13 +101,16 @@ model SectionQuestion {
   id            Int      @id @default(autoincrement())
   questionText  String   @db.Text // 问题文本
   options       Json? // 题目选项 (例如 ["A. ...", "B. ..."] 或 [{key: "A", value: "..."}, ...])，使用 JSON 类型增加灵活性
-  correctAnswer String // 正确答案 (例如 "A" 或 对应的文本)
+  correctAnswer String? // 正确答案 (例如 "A" 或 对应的文本)
   explanation   String?  @db.Text // 答案解析
-  questionType  String   @default("multiple_choice") // 问题类型 (例如 'multiple_choice', 'fill_in_blank')
-  order         Int // 问题在小节中的顺序
+  order         Int? // 问题在小节中的顺序
   sectionId     Int // 外键，关联到 CourseSection
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
+
+  // 新增字段和关系，用于关联 QuestionType
+  questionTypeId Int          @map("question_type_id")
+  questionType   QuestionType @relation(fields: [questionTypeId], references: [id])
 
   // 关系字段
   section      CourseSection   @relation(fields: [sectionId], references: [id], onDelete: Cascade) // 所属小节，小节删除时问题也删除
@@ -151,4 +154,16 @@ model CheckInRecord {
   @@index([userId]) // 为用户 ID 添加索引
   @@index([checkInDate]) // 为打卡日期添加索引，方便按日期统计
   @@map("check_in_records")
+}
+
+// 8. 问题类型 (新模型)
+model QuestionType {
+  id          Int               @id @default(autoincrement())
+  name        String            @unique // 类型名称，例如 '单选题', '多选题'
+  description String? // 类型描述 (可选)
+  questions   SectionQuestion[] // 该类型下的所有问题
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  @@map("question_types")
 }

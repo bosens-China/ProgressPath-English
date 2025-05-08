@@ -56,6 +56,10 @@ function ManageLayout() {
             label: '问题管理',
             key: 'questions',
           },
+          {
+            label: '问题类型管理',
+            key: 'question-types',
+          },
         ],
       },
       {

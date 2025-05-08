@@ -13,6 +13,8 @@ import { AuthModule } from './auth/auth.module';
 import { CoursesModule } from './courses/courses.module';
 import { PictureBedModule } from './picture-bed/picture-bed.module';
 import { SectionsModule } from './sections/sections.module';
+import { QuestionsModule } from './questions/questions.module';
+import { QuestionTypesModule } from './question-types/question-types.module';
 
 @Module({
   imports: [
@@ -28,6 +30,8 @@ import { SectionsModule } from './sections/sections.module';
     CoursesModule,
     PictureBedModule,
     SectionsModule,
+    QuestionsModule,
+    QuestionTypesModule,
   ],
   controllers: [AppController],
   providers: [

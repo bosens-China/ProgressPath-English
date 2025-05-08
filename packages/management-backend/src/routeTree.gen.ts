@@ -14,9 +14,10 @@ import { Route as rootRoute } from './routes/__root'
 import { Route as LoginImport } from './routes/login'
 import { Route as ManageImport } from './routes/_manage'
 import { Route as ManageUsersImport } from './routes/_manage/users'
-import { Route as ManageQuestionsImport } from './routes/_manage/questions'
 import { Route as ManageCoursesImport } from './routes/_manage/courses'
 import { Route as ManageSectionsIndexImport } from './routes/_manage/sections/index'
+import { Route as ManageQuestionsIndexImport } from './routes/_manage/questions/index'
+import { Route as ManageQuestionTypesIndexImport } from './routes/_manage/question-types/index'
 
 // Create/Update Routes
 
@@ -37,12 +38,6 @@ const ManageUsersRoute = ManageUsersImport.update({
   getParentRoute: () => ManageRoute,
 } as any)
 
-const ManageQuestionsRoute = ManageQuestionsImport.update({
-  id: '/questions',
-  path: '/questions',
-  getParentRoute: () => ManageRoute,
-} as any)
-
 const ManageCoursesRoute = ManageCoursesImport.update({
   id: '/courses',
   path: '/courses',
@@ -52,6 +47,18 @@ const ManageCoursesRoute = ManageCoursesImport.update({
 const ManageSectionsIndexRoute = ManageSectionsIndexImport.update({
   id: '/sections/',
   path: '/sections/',
+  getParentRoute: () => ManageRoute,
+} as any)
+
+const ManageQuestionsIndexRoute = ManageQuestionsIndexImport.update({
+  id: '/questions/',
+  path: '/questions/',
+  getParentRoute: () => ManageRoute,
+} as any)
+
+const ManageQuestionTypesIndexRoute = ManageQuestionTypesIndexImport.update({
+  id: '/question-types/',
+  path: '/question-types/',
   getParentRoute: () => ManageRoute,
 } as any)
 
@@ -80,18 +87,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ManageCoursesImport
       parentRoute: typeof ManageImport
     }
-    '/_manage/questions': {
-      id: '/_manage/questions'
-      path: '/questions'
-      fullPath: '/questions'
-      preLoaderRoute: typeof ManageQuestionsImport
-      parentRoute: typeof ManageImport
-    }
     '/_manage/users': {
       id: '/_manage/users'
       path: '/users'
       fullPath: '/users'
       preLoaderRoute: typeof ManageUsersImport
+      parentRoute: typeof ManageImport
+    }
+    '/_manage/question-types/': {
+      id: '/_manage/question-types/'
+      path: '/question-types'
+      fullPath: '/question-types'
+      preLoaderRoute: typeof ManageQuestionTypesIndexImport
+      parentRoute: typeof ManageImport
+    }
+    '/_manage/questions/': {
+      id: '/_manage/questions/'
+      path: '/questions'
+      fullPath: '/questions'
+      preLoaderRoute: typeof ManageQuestionsIndexImport
       parentRoute: typeof ManageImport
     }
     '/_manage/sections/': {
@@ -108,15 +122,17 @@ declare module '@tanstack/react-router' {
 
 interface ManageRouteChildren {
   ManageCoursesRoute: typeof ManageCoursesRoute
-  ManageQuestionsRoute: typeof ManageQuestionsRoute
   ManageUsersRoute: typeof ManageUsersRoute
+  ManageQuestionTypesIndexRoute: typeof ManageQuestionTypesIndexRoute
+  ManageQuestionsIndexRoute: typeof ManageQuestionsIndexRoute
   ManageSectionsIndexRoute: typeof ManageSectionsIndexRoute
 }
 
 const ManageRouteChildren: ManageRouteChildren = {
   ManageCoursesRoute: ManageCoursesRoute,
-  ManageQuestionsRoute: ManageQuestionsRoute,
   ManageUsersRoute: ManageUsersRoute,
+  ManageQuestionTypesIndexRoute: ManageQuestionTypesIndexRoute,
+  ManageQuestionsIndexRoute: ManageQuestionsIndexRoute,
   ManageSectionsIndexRoute: ManageSectionsIndexRoute,
 }
 
@@ -127,8 +143,9 @@ export interface FileRoutesByFullPath {
   '': typeof ManageRouteWithChildren
   '/login': typeof LoginRoute
   '/courses': typeof ManageCoursesRoute
-  '/questions': typeof ManageQuestionsRoute
   '/users': typeof ManageUsersRoute
+  '/question-types': typeof ManageQuestionTypesIndexRoute
+  '/questions': typeof ManageQuestionsIndexRoute
   '/sections': typeof ManageSectionsIndexRoute
 }
 
@@ -136,8 +153,9 @@ export interface FileRoutesByTo {
   '': typeof ManageRouteWithChildren
   '/login': typeof LoginRoute
   '/courses': typeof ManageCoursesRoute
-  '/questions': typeof ManageQuestionsRoute
   '/users': typeof ManageUsersRoute
+  '/question-types': typeof ManageQuestionTypesIndexRoute
+  '/questions': typeof ManageQuestionsIndexRoute
   '/sections': typeof ManageSectionsIndexRoute
 }
 
@@ -146,23 +164,39 @@ export interface FileRoutesById {
   '/_manage': typeof ManageRouteWithChildren
   '/login': typeof LoginRoute
   '/_manage/courses': typeof ManageCoursesRoute
-  '/_manage/questions': typeof ManageQuestionsRoute
   '/_manage/users': typeof ManageUsersRoute
+  '/_manage/question-types/': typeof ManageQuestionTypesIndexRoute
+  '/_manage/questions/': typeof ManageQuestionsIndexRoute
   '/_manage/sections/': typeof ManageSectionsIndexRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '' | '/login' | '/courses' | '/questions' | '/users' | '/sections'
+  fullPaths:
+    | ''
+    | '/login'
+    | '/courses'
+    | '/users'
+    | '/question-types'
+    | '/questions'
+    | '/sections'
   fileRoutesByTo: FileRoutesByTo
-  to: '' | '/login' | '/courses' | '/questions' | '/users' | '/sections'
+  to:
+    | ''
+    | '/login'
+    | '/courses'
+    | '/users'
+    | '/question-types'
+    | '/questions'
+    | '/sections'
   id:
     | '__root__'
     | '/_manage'
     | '/login'
     | '/_manage/courses'
-    | '/_manage/questions'
     | '/_manage/users'
+    | '/_manage/question-types/'
+    | '/_manage/questions/'
     | '/_manage/sections/'
   fileRoutesById: FileRoutesById
 }
@@ -195,8 +229,9 @@ export const routeTree = rootRoute
       "filePath": "_manage.tsx",
       "children": [
         "/_manage/courses",
-        "/_manage/questions",
         "/_manage/users",
+        "/_manage/question-types/",
+        "/_manage/questions/",
         "/_manage/sections/"
       ]
     },
@@ -207,12 +242,16 @@ export const routeTree = rootRoute
       "filePath": "_manage/courses.tsx",
       "parent": "/_manage"
     },
-    "/_manage/questions": {
-      "filePath": "_manage/questions.tsx",
-      "parent": "/_manage"
-    },
     "/_manage/users": {
       "filePath": "_manage/users.tsx",
+      "parent": "/_manage"
+    },
+    "/_manage/question-types/": {
+      "filePath": "_manage/question-types/index.tsx",
+      "parent": "/_manage"
+    },
+    "/_manage/questions/": {
+      "filePath": "_manage/questions/index.tsx",
       "parent": "/_manage"
     },
     "/_manage/sections/": {
