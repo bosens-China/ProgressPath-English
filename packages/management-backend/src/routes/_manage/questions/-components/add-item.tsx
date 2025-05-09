@@ -1,15 +1,8 @@
 import { CloseOutlined } from '@ant-design/icons';
-import {
-  Button,
-  Card,
-  Divider,
-  Form,
-  FormInstance,
-  Input,
-  InputNumber,
-} from 'antd';
+import { Button, Card, Form, FormInstance } from 'antd';
 import { CreateQuestionDto } from 'backend-services/questions/dto/create-question.dto.js';
 import { FC, useEffect } from 'react';
+import { FormItems } from './formitems';
 
 export type Data = Partial<CreateQuestionDto>[];
 interface Props {
@@ -47,39 +40,7 @@ export const AddItem: FC<Props> = ({ data, form }) => {
                       }
                       key={key}
                     >
-                      <Form.Item
-                        name={[name, 'questionText']}
-                        label="问题"
-                        rules={[{ required: true, message: '请输入问题!' }]}
-                      >
-                        <Input placeholder="请输入问题" />
-                      </Form.Item>
-                      <Form.Item
-                        name={[name, 'options']}
-                        label="问题额外选项"
-                        extra="要求json类型"
-                      >
-                        <Input.TextArea
-                          rows={2}
-                          placeholder="请输入问题额外选项"
-                        />
-                      </Form.Item>
-                      <Form.Item
-                        name={[name, 'correctAnswer']}
-                        label="正确答案"
-                      >
-                        <Input placeholder="请输入正确答案" />
-                      </Form.Item>
-                      <Form.Item name={[name, 'explanation']} label="答案解析">
-                        <Input placeholder="请输入答案解析" />
-                      </Form.Item>
-                      <Form.Item name={[name, 'order']} label="排序">
-                        <InputNumber
-                          placeholder="请输入排序"
-                          className="w-40"
-                        />
-                      </Form.Item>
-                      <Divider />
+                      <FormItems name={name}></FormItems>
                     </Card>
                   );
                 })}

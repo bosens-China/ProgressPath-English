@@ -4,6 +4,7 @@ import {
   ArgumentsHost,
   HttpException,
   UnauthorizedException,
+  BadRequestException,
 } from '@nestjs/common';
 import { Response } from 'express';
 
@@ -16,7 +17,11 @@ export class AllExceptionsFilter implements ExceptionFilter {
     let status = 500;
     let message = 'Internal server error';
 
-    if (exception instanceof UnauthorizedException) {
+    if (exception instanceof BadRequestException) {
+      const { message: msg } = exception.getResponse() as any;
+      message = Array.isArray(msg) ? msg.join('\n') : `${msg}`;
+      status = exception.getStatus();
+    } else if (exception instanceof UnauthorizedException) {
       status = 401;
       message = '身份验证失败，请重新登录';
     } else if (exception instanceof HttpException) {

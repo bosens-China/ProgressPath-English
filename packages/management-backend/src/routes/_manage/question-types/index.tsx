@@ -56,7 +56,7 @@ function RouteComponent() {
     {
       title: '创建时间',
       dataIndex: 'createdAt',
-      render: (date) => dayjs(date).format('YYYY-MM-DD'),
+      render: (date) => dayjs(date).format('YYYY-MM-DD HH:mm:ss'),
     },
     {
       title: '操作',

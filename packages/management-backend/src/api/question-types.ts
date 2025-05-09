@@ -49,12 +49,22 @@ export const editQuestionType = async (
   return data;
 };
 
-// 删除题型
+// 删除问题类型
 export const deleteQuestionType = async (id: number) => {
   const {
     data: { data },
   } = await request.delete<
     GlobalApiTypes<ReturnType<QuestionTypesController['remove']>>
   >(`/question-types/${id}`);
+  return data;
+};
+
+// 全部问题类型
+export const getAllQuestionTypes = async () => {
+  const {
+    data: { data },
+  } = await request.get<
+    GlobalApiTypes<ReturnType<QuestionTypesController['findAllLite']>>
+  >('/question-types/all');
   return data;
 };

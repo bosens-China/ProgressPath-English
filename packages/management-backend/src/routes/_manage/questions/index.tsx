@@ -9,6 +9,7 @@ import {
   Dropdown,
   Select,
   Input,
+  Tag,
 } from 'antd';
 import type { TableProps } from 'antd';
 import { SectionQuestion } from 'backend-services/common/prisma.type.ts';
@@ -21,6 +22,9 @@ import { getList, deleteQuestion } from '@/api/questions';
 import { useState } from 'react';
 import { BatchUploadDialog } from './-components/batch-upload-dialog';
 import { useStructuralSection } from '@/hooks/use-structural-section';
+import { EditQuestionDialog } from './-components/edit-question-dialog';
+import { QuestionType } from './-components/question-type';
+import { getAllQuestionTypes } from '@/api/question-types';
 
 export const Route = createFileRoute('/_manage/questions/')({
   component: QuestionsPage,
@@ -49,27 +53,42 @@ function QuestionsPage() {
     onError: (e) => message.error(e.message),
   });
 
+  const { courses, sections } = useStructuralSection();
+  const { data: questionTypes } = useRequest(getAllQuestionTypes, {
+    onError: (e) => message.error(e.message),
+  });
+
   const columns: TableProps<SectionQuestion>['columns'] = [
     { title: 'ID', dataIndex: 'id' },
     {
       title: '所属小节',
-      dataIndex: 'sectionId',
+      key: 'sectionId',
+      render(_, record) {
+        const section =
+          sections?.find((f) => f.id === record.sectionId) || null;
+        // 所属课程
+        const course = courses?.find((f) => f.id === section?.courseId) || null;
+        return (
+          <span>
+            <Tag>{course?.title}</Tag>
+            <Tag color="processing">{section?.title}</Tag>
+          </span>
+        );
+      },
     },
+
     {
-      title: '权重（排序）',
-      dataIndex: 'order',
+      title: '类型',
+      key: 'questionTypeId',
+      render(_, record) {
+        const questionType =
+          questionTypes?.find((f) => f.id === record.questionTypeId) || null;
+        return <span>{questionType?.name}</span>;
+      },
     },
     {
       title: '问题',
       dataIndex: 'questionText',
-    },
-    {
-      title: '类型',
-      dataIndex: 'questionTypeName',
-    },
-    {
-      title: '问题列表 (JSON)',
-      dataIndex: 'options',
     },
     {
       title: '正确答案',
@@ -78,6 +97,15 @@ function QuestionsPage() {
     {
       title: '解释',
       dataIndex: 'explanation',
+    },
+
+    {
+      title: '问题选项 (JSON)',
+      dataIndex: 'options',
+    },
+    {
+      title: '权重（排序）',
+      dataIndex: 'order',
     },
 
     {
@@ -94,15 +122,22 @@ function QuestionsPage() {
       fixed: 'right',
       width: 120,
       render: (_, record) => (
-        <Space size="small">
-          <Button size="small" type="link" onClick={() => {}}>
+        <Space>
+          <Button
+            className="p-0!"
+            type="link"
+            onClick={() => {
+              setData(record);
+              setOpenDialog(true);
+            }}
+          >
             编辑
           </Button>
           <Popconfirm
             title="确定删除此问题吗？"
             onConfirm={() => removeRun(record.id)}
           >
-            <Button size="small" type="link" danger>
+            <Button className="p-0!" type="link" danger>
               删除
             </Button>
           </Popconfirm>
@@ -113,12 +148,13 @@ function QuestionsPage() {
 
   const [open, setOpen] = useState(false);
 
-  const { courses, sections } = useStructuralSection();
-
   const courseId = Form.useWatch('courseId', form);
 
   const filteringSections =
     sections?.filter((f) => f.courseId === courseId) || [];
+
+  const [data, setData] = useState<SectionQuestion | null>(null);
+  const [openDialog, setOpenDialog] = useState(false);
 
   return (
     <div>
@@ -148,6 +184,12 @@ function QuestionsPage() {
               })}
             ></Select>
           </Form.Item>
+          <Form.Item<FindQuestionsQueryDto> name="questionTypeId">
+            <QuestionType
+              className="w-50!"
+              placeholder="请选择筛选的问题类型"
+            ></QuestionType>
+          </Form.Item>
           <Form.Item<FindQuestionsQueryDto> name="title">
             <Input className="w-40!" placeholder="请输入筛选的问题"></Input>
           </Form.Item>
@@ -167,6 +209,10 @@ function QuestionsPage() {
                 {
                   label: '新建问题',
                   key: 'add',
+                  onClick() {
+                    setData(null);
+                    setOpenDialog(true);
+                  },
                 },
               ],
             }}
@@ -191,6 +237,14 @@ function QuestionsPage() {
         resetList={resetList}
         setVisible={setOpen}
       ></BatchUploadDialog>
+
+      <EditQuestionDialog
+        data={data}
+        open={openDialog}
+        setOpen={setOpenDialog}
+        refreshCurrentList={refreshCurrentList}
+        resetList={resetList}
+      ></EditQuestionDialog>
     </div>
   );
 }
