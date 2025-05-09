@@ -7,6 +7,9 @@ import { TanStackRouterRspack } from '@tanstack/router-plugin/rspack';
 import { codeInspectorPlugin } from 'code-inspector-plugin';
 
 export default defineConfig({
+  html: {
+    title: 'Progresspath English 管理系统',
+  },
   plugins: [
     pluginReact(),
     pluginSvgr(),

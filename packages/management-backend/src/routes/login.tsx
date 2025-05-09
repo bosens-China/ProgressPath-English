@@ -5,6 +5,7 @@ import { AdminLoginDto } from 'backend-services/admin/dto/admin-login.dto.ts';
 import { login } from '@/api/admin';
 import { useRequest } from 'ahooks';
 import { useUserStore } from '@/stores/user';
+import { useEffect } from 'react';
 
 export const Route = createFileRoute('/login')({
   component: LoginPage,
@@ -17,6 +18,13 @@ function LoginPage() {
 
   const setUser = useUserStore((s) => s.setUser);
   const { message } = App.useApp();
+
+  /*
+   * 进入登陆页面就要清空用户信息，防止还可以返回的情况出现
+   */
+  useEffect(() => {
+    setUser(null);
+  }, [setUser]);
 
   const { run } = useRequest(login, {
     manual: true,

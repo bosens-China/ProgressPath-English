@@ -230,7 +230,7 @@ function QuestionsPage() {
         </Space>
       </div>
 
-      <Table {...tableProps} columns={columns}></Table>
+      <Table rowKey="id" {...tableProps} columns={columns}></Table>
 
       <BatchUploadDialog
         visible={open}

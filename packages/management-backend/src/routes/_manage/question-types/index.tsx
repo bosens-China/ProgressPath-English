@@ -139,7 +139,7 @@ function RouteComponent() {
           </Button>
         </div>
       </div>
-      <Table columns={columns} {...tableProps}></Table>
+      <Table rowKey="id" columns={columns} {...tableProps}></Table>
       <AddEdit
         resetList={resetList}
         refreshCurrentList={refreshCurrentList}

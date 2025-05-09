@@ -13,8 +13,8 @@
 import { Route as rootRoute } from './routes/__root'
 import { Route as LoginImport } from './routes/login'
 import { Route as ManageImport } from './routes/_manage'
-import { Route as ManageUsersImport } from './routes/_manage/users'
 import { Route as ManageCoursesImport } from './routes/_manage/courses'
+import { Route as ManageUsersIndexImport } from './routes/_manage/users/index'
 import { Route as ManageSectionsIndexImport } from './routes/_manage/sections/index'
 import { Route as ManageQuestionsIndexImport } from './routes/_manage/questions/index'
 import { Route as ManageQuestionTypesIndexImport } from './routes/_manage/question-types/index'
@@ -32,15 +32,15 @@ const ManageRoute = ManageImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
-const ManageUsersRoute = ManageUsersImport.update({
-  id: '/users',
-  path: '/users',
-  getParentRoute: () => ManageRoute,
-} as any)
-
 const ManageCoursesRoute = ManageCoursesImport.update({
   id: '/courses',
   path: '/courses',
+  getParentRoute: () => ManageRoute,
+} as any)
+
+const ManageUsersIndexRoute = ManageUsersIndexImport.update({
+  id: '/users/',
+  path: '/users/',
   getParentRoute: () => ManageRoute,
 } as any)
 
@@ -87,13 +87,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ManageCoursesImport
       parentRoute: typeof ManageImport
     }
-    '/_manage/users': {
-      id: '/_manage/users'
-      path: '/users'
-      fullPath: '/users'
-      preLoaderRoute: typeof ManageUsersImport
-      parentRoute: typeof ManageImport
-    }
     '/_manage/question-types/': {
       id: '/_manage/question-types/'
       path: '/question-types'
@@ -115,6 +108,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ManageSectionsIndexImport
       parentRoute: typeof ManageImport
     }
+    '/_manage/users/': {
+      id: '/_manage/users/'
+      path: '/users'
+      fullPath: '/users'
+      preLoaderRoute: typeof ManageUsersIndexImport
+      parentRoute: typeof ManageImport
+    }
   }
 }
 
@@ -122,18 +122,18 @@ declare module '@tanstack/react-router' {
 
 interface ManageRouteChildren {
   ManageCoursesRoute: typeof ManageCoursesRoute
-  ManageUsersRoute: typeof ManageUsersRoute
   ManageQuestionTypesIndexRoute: typeof ManageQuestionTypesIndexRoute
   ManageQuestionsIndexRoute: typeof ManageQuestionsIndexRoute
   ManageSectionsIndexRoute: typeof ManageSectionsIndexRoute
+  ManageUsersIndexRoute: typeof ManageUsersIndexRoute
 }
 
 const ManageRouteChildren: ManageRouteChildren = {
   ManageCoursesRoute: ManageCoursesRoute,
-  ManageUsersRoute: ManageUsersRoute,
   ManageQuestionTypesIndexRoute: ManageQuestionTypesIndexRoute,
   ManageQuestionsIndexRoute: ManageQuestionsIndexRoute,
   ManageSectionsIndexRoute: ManageSectionsIndexRoute,
+  ManageUsersIndexRoute: ManageUsersIndexRoute,
 }
 
 const ManageRouteWithChildren =
@@ -143,20 +143,20 @@ export interface FileRoutesByFullPath {
   '': typeof ManageRouteWithChildren
   '/login': typeof LoginRoute
   '/courses': typeof ManageCoursesRoute
-  '/users': typeof ManageUsersRoute
   '/question-types': typeof ManageQuestionTypesIndexRoute
   '/questions': typeof ManageQuestionsIndexRoute
   '/sections': typeof ManageSectionsIndexRoute
+  '/users': typeof ManageUsersIndexRoute
 }
 
 export interface FileRoutesByTo {
   '': typeof ManageRouteWithChildren
   '/login': typeof LoginRoute
   '/courses': typeof ManageCoursesRoute
-  '/users': typeof ManageUsersRoute
   '/question-types': typeof ManageQuestionTypesIndexRoute
   '/questions': typeof ManageQuestionsIndexRoute
   '/sections': typeof ManageSectionsIndexRoute
+  '/users': typeof ManageUsersIndexRoute
 }
 
 export interface FileRoutesById {
@@ -164,10 +164,10 @@ export interface FileRoutesById {
   '/_manage': typeof ManageRouteWithChildren
   '/login': typeof LoginRoute
   '/_manage/courses': typeof ManageCoursesRoute
-  '/_manage/users': typeof ManageUsersRoute
   '/_manage/question-types/': typeof ManageQuestionTypesIndexRoute
   '/_manage/questions/': typeof ManageQuestionsIndexRoute
   '/_manage/sections/': typeof ManageSectionsIndexRoute
+  '/_manage/users/': typeof ManageUsersIndexRoute
 }
 
 export interface FileRouteTypes {
@@ -176,28 +176,28 @@ export interface FileRouteTypes {
     | ''
     | '/login'
     | '/courses'
-    | '/users'
     | '/question-types'
     | '/questions'
     | '/sections'
+    | '/users'
   fileRoutesByTo: FileRoutesByTo
   to:
     | ''
     | '/login'
     | '/courses'
-    | '/users'
     | '/question-types'
     | '/questions'
     | '/sections'
+    | '/users'
   id:
     | '__root__'
     | '/_manage'
     | '/login'
     | '/_manage/courses'
-    | '/_manage/users'
     | '/_manage/question-types/'
     | '/_manage/questions/'
     | '/_manage/sections/'
+    | '/_manage/users/'
   fileRoutesById: FileRoutesById
 }
 
@@ -229,10 +229,10 @@ export const routeTree = rootRoute
       "filePath": "_manage.tsx",
       "children": [
         "/_manage/courses",
-        "/_manage/users",
         "/_manage/question-types/",
         "/_manage/questions/",
-        "/_manage/sections/"
+        "/_manage/sections/",
+        "/_manage/users/"
       ]
     },
     "/login": {
@@ -240,10 +240,6 @@ export const routeTree = rootRoute
     },
     "/_manage/courses": {
       "filePath": "_manage/courses.tsx",
-      "parent": "/_manage"
-    },
-    "/_manage/users": {
-      "filePath": "_manage/users.tsx",
       "parent": "/_manage"
     },
     "/_manage/question-types/": {
@@ -256,6 +252,10 @@ export const routeTree = rootRoute
     },
     "/_manage/sections/": {
       "filePath": "_manage/sections/index.tsx",
+      "parent": "/_manage"
+    },
+    "/_manage/users/": {
+      "filePath": "_manage/users/index.tsx",
       "parent": "/_manage"
     }
   }

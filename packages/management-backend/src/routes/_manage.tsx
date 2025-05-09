@@ -69,7 +69,7 @@ function ManageLayout() {
         children: [
           {
             label: '用户管理',
-            key: 'user-manage',
+            key: 'users',
           },
         ],
       },
@@ -90,8 +90,6 @@ function ManageLayout() {
       ],
     ];
   }, [items, pathname]);
-
-  console.log(openKeys, selectedKeys);
 
   return (
     <Layout style={{ minHeight: '100vh' }}>
