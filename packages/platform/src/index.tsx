@@ -23,7 +23,23 @@ if (rootEl) {
   const root = ReactDOM.createRoot(rootEl);
   root.render(
     <React.StrictMode>
-      <ConfigProvider locale={zhCN} theme={{ cssVar: true, hashed: false }}>
+      <ConfigProvider
+        locale={zhCN}
+        theme={{
+          cssVar: true,
+          hashed: false,
+          token: {
+            colorPrimary: '#927AF4',
+          },
+          components: {
+            Layout: {
+              headerBg: '#fff',
+              siderBg: '#fff',
+              headerPadding: '0 24px',
+            },
+          },
+        }}
+      >
         <App>
           <RouterProvider router={router} />
         </App>

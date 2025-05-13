@@ -13,11 +13,9 @@
 import { Route as rootRoute } from './routes/__root'
 import { Route as MainImport } from './routes/_main'
 import { Route as LoginIndexImport } from './routes/login/index'
-import { Route as MainCoursesImport } from './routes/_main/courses'
-import { Route as MainUsersIndexImport } from './routes/_main/users/index'
-import { Route as MainSectionsIndexImport } from './routes/_main/sections/index'
-import { Route as MainQuestionsIndexImport } from './routes/_main/questions/index'
-import { Route as MainQuestionTypesIndexImport } from './routes/_main/question-types/index'
+import { Route as MainMyCoursesIndexImport } from './routes/_main/my-courses/index'
+import { Route as MainDashboardIndexImport } from './routes/_main/dashboard/index'
+import { Route as MainAllCoursesIndexImport } from './routes/_main/all-courses/index'
 
 // Create/Update Routes
 
@@ -32,33 +30,21 @@ const LoginIndexRoute = LoginIndexImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
-const MainCoursesRoute = MainCoursesImport.update({
-  id: '/courses',
-  path: '/courses',
+const MainMyCoursesIndexRoute = MainMyCoursesIndexImport.update({
+  id: '/my-courses/',
+  path: '/my-courses/',
   getParentRoute: () => MainRoute,
 } as any)
 
-const MainUsersIndexRoute = MainUsersIndexImport.update({
-  id: '/users/',
-  path: '/users/',
+const MainDashboardIndexRoute = MainDashboardIndexImport.update({
+  id: '/dashboard/',
+  path: '/dashboard/',
   getParentRoute: () => MainRoute,
 } as any)
 
-const MainSectionsIndexRoute = MainSectionsIndexImport.update({
-  id: '/sections/',
-  path: '/sections/',
-  getParentRoute: () => MainRoute,
-} as any)
-
-const MainQuestionsIndexRoute = MainQuestionsIndexImport.update({
-  id: '/questions/',
-  path: '/questions/',
-  getParentRoute: () => MainRoute,
-} as any)
-
-const MainQuestionTypesIndexRoute = MainQuestionTypesIndexImport.update({
-  id: '/question-types/',
-  path: '/question-types/',
+const MainAllCoursesIndexRoute = MainAllCoursesIndexImport.update({
+  id: '/all-courses/',
+  path: '/all-courses/',
   getParentRoute: () => MainRoute,
 } as any)
 
@@ -73,13 +59,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MainImport
       parentRoute: typeof rootRoute
     }
-    '/_main/courses': {
-      id: '/_main/courses'
-      path: '/courses'
-      fullPath: '/courses'
-      preLoaderRoute: typeof MainCoursesImport
-      parentRoute: typeof MainImport
-    }
     '/login/': {
       id: '/login/'
       path: '/login'
@@ -87,32 +66,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginIndexImport
       parentRoute: typeof rootRoute
     }
-    '/_main/question-types/': {
-      id: '/_main/question-types/'
-      path: '/question-types'
-      fullPath: '/question-types'
-      preLoaderRoute: typeof MainQuestionTypesIndexImport
+    '/_main/all-courses/': {
+      id: '/_main/all-courses/'
+      path: '/all-courses'
+      fullPath: '/all-courses'
+      preLoaderRoute: typeof MainAllCoursesIndexImport
       parentRoute: typeof MainImport
     }
-    '/_main/questions/': {
-      id: '/_main/questions/'
-      path: '/questions'
-      fullPath: '/questions'
-      preLoaderRoute: typeof MainQuestionsIndexImport
+    '/_main/dashboard/': {
+      id: '/_main/dashboard/'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof MainDashboardIndexImport
       parentRoute: typeof MainImport
     }
-    '/_main/sections/': {
-      id: '/_main/sections/'
-      path: '/sections'
-      fullPath: '/sections'
-      preLoaderRoute: typeof MainSectionsIndexImport
-      parentRoute: typeof MainImport
-    }
-    '/_main/users/': {
-      id: '/_main/users/'
-      path: '/users'
-      fullPath: '/users'
-      preLoaderRoute: typeof MainUsersIndexImport
+    '/_main/my-courses/': {
+      id: '/_main/my-courses/'
+      path: '/my-courses'
+      fullPath: '/my-courses'
+      preLoaderRoute: typeof MainMyCoursesIndexImport
       parentRoute: typeof MainImport
     }
   }
@@ -121,82 +93,56 @@ declare module '@tanstack/react-router' {
 // Create and export the route tree
 
 interface MainRouteChildren {
-  MainCoursesRoute: typeof MainCoursesRoute
-  MainQuestionTypesIndexRoute: typeof MainQuestionTypesIndexRoute
-  MainQuestionsIndexRoute: typeof MainQuestionsIndexRoute
-  MainSectionsIndexRoute: typeof MainSectionsIndexRoute
-  MainUsersIndexRoute: typeof MainUsersIndexRoute
+  MainAllCoursesIndexRoute: typeof MainAllCoursesIndexRoute
+  MainDashboardIndexRoute: typeof MainDashboardIndexRoute
+  MainMyCoursesIndexRoute: typeof MainMyCoursesIndexRoute
 }
 
 const MainRouteChildren: MainRouteChildren = {
-  MainCoursesRoute: MainCoursesRoute,
-  MainQuestionTypesIndexRoute: MainQuestionTypesIndexRoute,
-  MainQuestionsIndexRoute: MainQuestionsIndexRoute,
-  MainSectionsIndexRoute: MainSectionsIndexRoute,
-  MainUsersIndexRoute: MainUsersIndexRoute,
+  MainAllCoursesIndexRoute: MainAllCoursesIndexRoute,
+  MainDashboardIndexRoute: MainDashboardIndexRoute,
+  MainMyCoursesIndexRoute: MainMyCoursesIndexRoute,
 }
 
 const MainRouteWithChildren = MainRoute._addFileChildren(MainRouteChildren)
 
 export interface FileRoutesByFullPath {
   '': typeof MainRouteWithChildren
-  '/courses': typeof MainCoursesRoute
   '/login': typeof LoginIndexRoute
-  '/question-types': typeof MainQuestionTypesIndexRoute
-  '/questions': typeof MainQuestionsIndexRoute
-  '/sections': typeof MainSectionsIndexRoute
-  '/users': typeof MainUsersIndexRoute
+  '/all-courses': typeof MainAllCoursesIndexRoute
+  '/dashboard': typeof MainDashboardIndexRoute
+  '/my-courses': typeof MainMyCoursesIndexRoute
 }
 
 export interface FileRoutesByTo {
   '': typeof MainRouteWithChildren
-  '/courses': typeof MainCoursesRoute
   '/login': typeof LoginIndexRoute
-  '/question-types': typeof MainQuestionTypesIndexRoute
-  '/questions': typeof MainQuestionsIndexRoute
-  '/sections': typeof MainSectionsIndexRoute
-  '/users': typeof MainUsersIndexRoute
+  '/all-courses': typeof MainAllCoursesIndexRoute
+  '/dashboard': typeof MainDashboardIndexRoute
+  '/my-courses': typeof MainMyCoursesIndexRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/_main': typeof MainRouteWithChildren
-  '/_main/courses': typeof MainCoursesRoute
   '/login/': typeof LoginIndexRoute
-  '/_main/question-types/': typeof MainQuestionTypesIndexRoute
-  '/_main/questions/': typeof MainQuestionsIndexRoute
-  '/_main/sections/': typeof MainSectionsIndexRoute
-  '/_main/users/': typeof MainUsersIndexRoute
+  '/_main/all-courses/': typeof MainAllCoursesIndexRoute
+  '/_main/dashboard/': typeof MainDashboardIndexRoute
+  '/_main/my-courses/': typeof MainMyCoursesIndexRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths:
-    | ''
-    | '/courses'
-    | '/login'
-    | '/question-types'
-    | '/questions'
-    | '/sections'
-    | '/users'
+  fullPaths: '' | '/login' | '/all-courses' | '/dashboard' | '/my-courses'
   fileRoutesByTo: FileRoutesByTo
-  to:
-    | ''
-    | '/courses'
-    | '/login'
-    | '/question-types'
-    | '/questions'
-    | '/sections'
-    | '/users'
+  to: '' | '/login' | '/all-courses' | '/dashboard' | '/my-courses'
   id:
     | '__root__'
     | '/_main'
-    | '/_main/courses'
     | '/login/'
-    | '/_main/question-types/'
-    | '/_main/questions/'
-    | '/_main/sections/'
-    | '/_main/users/'
+    | '/_main/all-courses/'
+    | '/_main/dashboard/'
+    | '/_main/my-courses/'
   fileRoutesById: FileRoutesById
 }
 
@@ -227,34 +173,24 @@ export const routeTree = rootRoute
     "/_main": {
       "filePath": "_main.tsx",
       "children": [
-        "/_main/courses",
-        "/_main/question-types/",
-        "/_main/questions/",
-        "/_main/sections/",
-        "/_main/users/"
+        "/_main/all-courses/",
+        "/_main/dashboard/",
+        "/_main/my-courses/"
       ]
-    },
-    "/_main/courses": {
-      "filePath": "_main/courses.tsx",
-      "parent": "/_main"
     },
     "/login/": {
       "filePath": "login/index.tsx"
     },
-    "/_main/question-types/": {
-      "filePath": "_main/question-types/index.tsx",
+    "/_main/all-courses/": {
+      "filePath": "_main/all-courses/index.tsx",
       "parent": "/_main"
     },
-    "/_main/questions/": {
-      "filePath": "_main/questions/index.tsx",
+    "/_main/dashboard/": {
+      "filePath": "_main/dashboard/index.tsx",
       "parent": "/_main"
     },
-    "/_main/sections/": {
-      "filePath": "_main/sections/index.tsx",
-      "parent": "/_main"
-    },
-    "/_main/users/": {
-      "filePath": "_main/users/index.tsx",
+    "/_main/my-courses/": {
+      "filePath": "_main/my-courses/index.tsx",
       "parent": "/_main"
     }
   }

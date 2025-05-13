@@ -1,8 +1,8 @@
 import { create } from 'zustand';
 import { devtools, persist } from 'zustand/middleware';
-import { AdminService } from 'backend-services/admin/admin.service.ts';
+import { UsersService } from 'backend-services/users/users.service.ts';
 
-export type User = null | Awaited<ReturnType<AdminService['login']>>;
+export type User = null | Awaited<ReturnType<UsersService['loginWithPhone']>>;
 
 interface UserState {
   user: User;

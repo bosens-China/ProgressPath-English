@@ -1,16 +1,23 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  UnauthorizedException,
+  BadRequestException,
+} from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { UpdatePhoneDto } from './dto/update-phone.dto';
 import { PrismaService } from '../prisma/prisma.service';
 import { AuthService } from '../auth/auth.service';
 import { FindUsersQueryDto } from './dto/find-users-query.dto';
 import { Prisma, User } from '@prisma/client';
+import { SmsService } from '../sms/sms.service';
 
 @Injectable()
 export class UsersService {
   constructor(
     private prisma: PrismaService,
     private authService: AuthService,
+    private smsService: SmsService,
   ) {}
 
   async create(createUserDto: CreateUserDto) {
@@ -98,7 +105,14 @@ export class UsersService {
     return { list, total };
   }
 
-  async loginWithPhone(phone: string) {
+  async loginWithPhone(phone: string, code: string) {
+    // 先验证验证码
+    const isCodeValid = await this.smsService.verifyCode(phone, code);
+    if (!isCodeValid) {
+      throw new UnauthorizedException('验证码无效或已过期');
+    }
+
+    // 验证通过后执行登录流程
     let user = await this.prisma.user.findUnique({ where: { phone } });
     if (!user) {
       user = await this.create({
@@ -110,6 +124,40 @@ export class UsersService {
       access_token: await this.authService.generateUserToken(
         user.id,
         user.phone,
+      ),
+    };
+  }
+
+  async updatePhone(id: number, updatePhoneDto: UpdatePhoneDto) {
+    // 验证验证码
+    const isCodeValid = await this.smsService.verifyCode(
+      updatePhoneDto.newPhone,
+      updatePhoneDto.code,
+    );
+    if (!isCodeValid) {
+      throw new UnauthorizedException('验证码无效或已过期');
+    }
+
+    // 检查新手机号是否已被使用
+    const existingUser = await this.prisma.user.findUnique({
+      where: { phone: updatePhoneDto.newPhone },
+    });
+    if (existingUser && existingUser.id !== id) {
+      throw new BadRequestException('该手机号已被其他用户使用');
+    }
+
+    // 更新手机号
+    const updatedUser = await this.prisma.user.update({
+      where: { id },
+      data: { phone: updatePhoneDto.newPhone },
+    });
+
+    // 生成新的 token
+    return {
+      ...updatedUser,
+      access_token: await this.authService.generateUserToken(
+        updatedUser.id,
+        updatedUser.phone,
       ),
     };
   }

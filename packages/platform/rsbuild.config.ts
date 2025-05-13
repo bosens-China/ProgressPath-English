@@ -8,7 +8,8 @@ import { codeInspectorPlugin } from 'code-inspector-plugin';
 
 export default defineConfig({
   html: {
-    title: 'Progresspath English 管理系统',
+    title: 'Progresspath English',
+    favicon: './src/assets/img/logo.svg',
   },
   plugins: [
     pluginReact(),

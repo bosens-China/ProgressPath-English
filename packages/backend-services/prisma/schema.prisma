@@ -31,7 +31,7 @@ model Admin {
 model User {
   id               Int      @id @default(autoincrement())
   phone            String   @unique // 用户手机号，需唯一
-  nickname         String? // 用户昵称
+  nickname         String?  @default("momo") // 用户昵称
   avatarUrl        String? // 头像链接
   registrationDate DateTime @default(now()) // 注册时间
   createdAt        DateTime @default(now())

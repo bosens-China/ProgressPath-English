@@ -13,6 +13,7 @@ import {
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { UpdatePhoneDto } from './dto/update-phone.dto';
 import { LoginWithPhoneDto } from './dto/login-with-phone.dto';
 import { Public } from '../auth/public.decorator';
 import { FindUsersQueryDto } from './dto/find-users-query.dto';
@@ -51,10 +52,21 @@ export class UsersController {
 
   @Public()
   @Post('login-with-phone')
-  async loginWithPhone(@Body() loginWithPhoneDto: LoginWithPhoneDto) {
+  async loginWithPhone(
+    @Body(ValidationPipe) loginWithPhoneDto: LoginWithPhoneDto,
+  ) {
     const userData = await this.usersService.loginWithPhone(
       loginWithPhoneDto.phone,
+      loginWithPhoneDto.code,
     );
     return userData;
+  }
+
+  @Patch(':id/phone')
+  updatePhone(
+    @Param('id', ParseIntPipe) id: number,
+    @Body(ValidationPipe) updatePhoneDto: UpdatePhoneDto,
+  ) {
+    return this.usersService.updatePhone(id, updatePhoneDto);
   }
 }

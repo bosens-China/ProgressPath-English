@@ -29,7 +29,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
       message = exception.message;
     }
 
-    response.status(status).json({
+    response.status(200).json({
       code: status,
       msg: message,
       data: null,

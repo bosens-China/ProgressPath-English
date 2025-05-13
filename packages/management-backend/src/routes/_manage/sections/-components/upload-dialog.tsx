@@ -106,7 +106,6 @@ const UploadDialog = ({ resetList }: Props) => {
         open={visible}
         onCancel={onCancel}
         onOk={handleOk}
-        destroyOnClose
         loading={uploadLoading}
       >
         <Spin spinning={coursesLoading}>

@@ -76,7 +76,7 @@ export const EditQuestionDialog: FC<Props> = ({
       addQuestionRequest(obj);
       return;
     }
-    editQuestionRequest(data.id, obj);
+    editQuestionRequest(data.id, _.omit(obj, ['phone']));
   };
 
   useEffect(() => {
@@ -125,20 +125,26 @@ export const EditQuestionDialog: FC<Props> = ({
           <Form.Item<FormValues> name={'nickname'} label="昵称">
             <Input placeholder="请输入昵称"></Input>
           </Form.Item>
+          {/*
+           * 禁止修改手机号，编辑情况下
+           */}
 
-          <Form.Item<FormValues>
-            name={'phone'}
-            label="手机号"
-            rules={[
-              { required: true, message: '请输入手机号!' },
-              {
-                pattern: /^1[3-9]\d{9}$/,
-                message: '请输入正确的手机号!',
-              },
-            ]}
-          >
-            <Input placeholder="请输入手机号"></Input>
-          </Form.Item>
+          {data ? null : (
+            <Form.Item<FormValues>
+              name={'phone'}
+              label="手机号"
+              rules={[
+                { required: true, message: '请输入手机号!' },
+                {
+                  pattern: /^1[3-9]\d{9}$/,
+                  message: '请输入正确的手机号!',
+                },
+              ]}
+            >
+              <Input placeholder="请输入手机号"></Input>
+            </Form.Item>
+          )}
+
           <Form.Item<FormValues>
             name="file"
             label="头像"

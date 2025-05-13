@@ -1,12 +1,12 @@
 import { IsNotEmpty, IsString, Matches, Length } from 'class-validator';
 
-export class LoginWithPhoneDto {
+export class UpdatePhoneDto {
   @IsString()
   @IsNotEmpty()
   @Matches(/^1[3-9]\d{9}$/, {
     message: '手机号必须是有效的中国手机号',
   })
-  phone: string;
+  newPhone: string;
 
   @IsString()
   @IsNotEmpty()
