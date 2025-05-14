@@ -1,6 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router';
 import {
-  Table,
   Button,
   Space,
   Popconfirm,
@@ -8,6 +7,7 @@ import {
   Form,
   Select,
   Input,
+  Table,
 } from 'antd';
 import type { TableProps } from 'antd';
 import UploadDialog from './-components/upload-dialog';
@@ -20,6 +20,7 @@ import EditDialog from './-components/edit-dialog';
 import { useState } from 'react';
 import { getAllCourses } from '@/api/courses';
 import { FindSectionsQueryDto } from 'backend-services/sections/dto/find-sections-query.dto.js';
+import { Sort } from './-components/sort';
 
 export const Route = createFileRoute('/_manage/sections/')({
   component: SectionsPage,
@@ -132,11 +133,12 @@ function SectionsPage() {
           </Form.Item>
         </Form>
         <Space>
+          <Sort refreshCurrentList={refreshCurrentList}></Sort>
           <UploadDialog resetList={resetList}></UploadDialog>
         </Space>
       </div>
 
-      <Table columns={columns} rowKey="id" {...tableProps} />
+      <Table rowKey="id" columns={columns} {...tableProps}></Table>
 
       <EditDialog
         visible={editDialogVisible}

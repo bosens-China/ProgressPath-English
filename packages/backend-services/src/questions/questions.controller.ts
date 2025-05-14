@@ -16,6 +16,7 @@ import { QuestionsService } from './questions.service';
 import { CreateQuestionDto } from './dto/create-question.dto';
 import { UpdateQuestionDto } from './dto/update-question.dto';
 import { FindQuestionsQueryDto } from './dto/find-questions-query.dto';
+import { UpdateQuestionOrderDto } from './dto/update-question-order.dto';
 
 @Controller('questions')
 export class QuestionsController {
@@ -91,5 +92,17 @@ export class QuestionsController {
   @HttpCode(HttpStatus.OK)
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.questionsService.remove(id);
+  }
+
+  /**
+   * @description 批量更新问题排序
+   */
+  @Patch('batch-order')
+  @HttpCode(HttpStatus.OK)
+  updateOrder(
+    @Body(new ValidationPipe({ transform: true }))
+    updateQuestionOrderDto: UpdateQuestionOrderDto,
+  ) {
+    return this.questionsService.updateOrder(updateQuestionOrderDto);
   }
 }

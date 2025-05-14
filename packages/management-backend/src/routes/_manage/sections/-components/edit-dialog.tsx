@@ -71,7 +71,6 @@ const EditDialog: React.FC<EditDialogProps> = ({
       title="编辑小节"
       open={visible}
       onCancel={onCancel}
-      destroyOnClose
       loading={loading}
       onOk={handleOk}
     >

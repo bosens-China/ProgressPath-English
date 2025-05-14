@@ -3,6 +3,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateCourseDto } from './dto/create-course.dto';
 import { UpdateCourseDto } from './dto/update-course.dto';
 import { FindCoursesQueryDto, parseNumber } from './dto/find-courses-query.dto';
+import { ToggleCourseStatusDto } from './dto/toggle-course-status.dto';
 import { Prisma } from '@prisma/client';
 
 @Injectable()
@@ -121,6 +122,27 @@ export class CoursesService {
     // Consider if hard delete is really needed, or if deactivation is sufficient
     try {
       return await this.prisma.course.delete({ where: { id } });
+    } catch (error) {
+      if (
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === 'P2025'
+      ) {
+        throw new NotFoundException(`Course with ID ${id} not found`);
+      }
+      throw error;
+    }
+  }
+
+  async toggleStatus(id: number, toggleCourseStatusDto: ToggleCourseStatusDto) {
+    try {
+      const course = await this.prisma.course.update({
+        where: { id },
+        data: { isPublished: toggleCourseStatusDto.isPublished },
+      });
+      return {
+        ...course,
+        message: course.isPublished ? '课程已启用' : '课程已停用',
+      };
     } catch (error) {
       if (
         error instanceof Prisma.PrismaClientKnownRequestError &&

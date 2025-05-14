@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1em" height="1em" viewBox="0 0 200 200">
+	<path d="M10 0L190 0C195.523 0 200 4.477 200 10L200 190C200 195.523 195.523 200 190 200L10 200C4.477 200 0 195.523 0 190L0 10C0 4.477 4.477 0 10 0Z" fill-rule="nonzero" transform="matrix(1 0 0 1 0 0)" fill="rgb(146, 122, 244)" fill-opacity="0.1"/>
+	<path d="M0 0L50 0L50 20L20 20L20 50L45 50L45 70L20 70L20 110L0 110L0 0ZM70 0L120 0L120 20L90 20L90 50L115 50L115 70L90 70L90 110L70 110L70 0Z" fill-rule="nonzero" transform="matrix(1 0 0 1 40 40)" fill="rgb(146, 122, 244)"/>
+</svg>

@@ -32,11 +32,6 @@ export class CreateQuestionDto {
   @Min(1, { message: '问题类型ID必须大于0' })
   questionTypeId: number;
 
-  @IsOptional()
-  @IsInt({ message: '排序字段必须是整数' })
-  @Min(0, { message: '排序字段不能为负数' })
-  order?: number;
-
   @IsDefined({ message: '小节ID不能为空' })
   @IsInt({ message: '小节ID必须是整数' })
   @Min(1, { message: '小节ID必须大于0' })

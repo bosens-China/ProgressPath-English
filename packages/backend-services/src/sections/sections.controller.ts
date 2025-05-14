@@ -16,6 +16,7 @@ import { SectionsService } from './sections.service';
 import { CreateSectionDto } from './dto/create-section.dto';
 import { UpdateSectionDto } from './dto/update-section.dto';
 import { FindSectionsQueryDto } from './dto/find-sections-query.dto';
+import { UpdateSectionOrderDto } from './dto/update-section-order.dto';
 
 @Controller('sections')
 export class SectionsController {
@@ -75,5 +76,17 @@ export class SectionsController {
   @HttpCode(HttpStatus.OK)
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.sectionsService.remove(id);
+  }
+
+  /**
+   * @description 批量更新小节排序
+   */
+  @Patch('batch/order')
+  @HttpCode(HttpStatus.OK)
+  updateOrder(
+    @Body(new ValidationPipe({ transform: true }))
+    updateSectionOrderDto: UpdateSectionOrderDto,
+  ) {
+    return this.sectionsService.updateOrder(updateSectionOrderDto);
   }
 }

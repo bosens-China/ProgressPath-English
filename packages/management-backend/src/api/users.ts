@@ -40,10 +40,8 @@ export async function updateUser(id: number, body: UpdateUserDto) {
 }
 
 export async function deleteUser(id: number) {
-  const {
-    data: { data },
-  } = await request.delete<
-    GlobalApiTypes<ReturnType<UsersController['remove']>>
-  >(`/users/${id}`);
-  return data;
+  await request.delete<GlobalApiTypes<ReturnType<UsersController['remove']>>>(
+    `/users/${id}`,
+  );
+  return `删除用户成功`;
 }

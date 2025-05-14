@@ -13,11 +13,13 @@
 import { Route as rootRoute } from './routes/__root'
 import { Route as LoginImport } from './routes/login'
 import { Route as ManageImport } from './routes/_manage'
-import { Route as ManageCoursesImport } from './routes/_manage/courses'
+import { Route as IndexImport } from './routes/index'
 import { Route as ManageUsersIndexImport } from './routes/_manage/users/index'
 import { Route as ManageSectionsIndexImport } from './routes/_manage/sections/index'
 import { Route as ManageQuestionsIndexImport } from './routes/_manage/questions/index'
 import { Route as ManageQuestionTypesIndexImport } from './routes/_manage/question-types/index'
+import { Route as ManageDifyManageIndexImport } from './routes/_manage/dify-manage/index'
+import { Route as ManageCoursesIndexImport } from './routes/_manage/courses/index'
 
 // Create/Update Routes
 
@@ -32,10 +34,10 @@ const ManageRoute = ManageImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
-const ManageCoursesRoute = ManageCoursesImport.update({
-  id: '/courses',
-  path: '/courses',
-  getParentRoute: () => ManageRoute,
+const IndexRoute = IndexImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => rootRoute,
 } as any)
 
 const ManageUsersIndexRoute = ManageUsersIndexImport.update({
@@ -62,10 +64,29 @@ const ManageQuestionTypesIndexRoute = ManageQuestionTypesIndexImport.update({
   getParentRoute: () => ManageRoute,
 } as any)
 
+const ManageDifyManageIndexRoute = ManageDifyManageIndexImport.update({
+  id: '/dify-manage/',
+  path: '/dify-manage/',
+  getParentRoute: () => ManageRoute,
+} as any)
+
+const ManageCoursesIndexRoute = ManageCoursesIndexImport.update({
+  id: '/courses/',
+  path: '/courses/',
+  getParentRoute: () => ManageRoute,
+} as any)
+
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexImport
+      parentRoute: typeof rootRoute
+    }
     '/_manage': {
       id: '/_manage'
       path: ''
@@ -80,11 +101,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginImport
       parentRoute: typeof rootRoute
     }
-    '/_manage/courses': {
-      id: '/_manage/courses'
+    '/_manage/courses/': {
+      id: '/_manage/courses/'
       path: '/courses'
       fullPath: '/courses'
-      preLoaderRoute: typeof ManageCoursesImport
+      preLoaderRoute: typeof ManageCoursesIndexImport
+      parentRoute: typeof ManageImport
+    }
+    '/_manage/dify-manage/': {
+      id: '/_manage/dify-manage/'
+      path: '/dify-manage'
+      fullPath: '/dify-manage'
+      preLoaderRoute: typeof ManageDifyManageIndexImport
       parentRoute: typeof ManageImport
     }
     '/_manage/question-types/': {
@@ -121,7 +149,8 @@ declare module '@tanstack/react-router' {
 // Create and export the route tree
 
 interface ManageRouteChildren {
-  ManageCoursesRoute: typeof ManageCoursesRoute
+  ManageCoursesIndexRoute: typeof ManageCoursesIndexRoute
+  ManageDifyManageIndexRoute: typeof ManageDifyManageIndexRoute
   ManageQuestionTypesIndexRoute: typeof ManageQuestionTypesIndexRoute
   ManageQuestionsIndexRoute: typeof ManageQuestionsIndexRoute
   ManageSectionsIndexRoute: typeof ManageSectionsIndexRoute
@@ -129,7 +158,8 @@ interface ManageRouteChildren {
 }
 
 const ManageRouteChildren: ManageRouteChildren = {
-  ManageCoursesRoute: ManageCoursesRoute,
+  ManageCoursesIndexRoute: ManageCoursesIndexRoute,
+  ManageDifyManageIndexRoute: ManageDifyManageIndexRoute,
   ManageQuestionTypesIndexRoute: ManageQuestionTypesIndexRoute,
   ManageQuestionsIndexRoute: ManageQuestionsIndexRoute,
   ManageSectionsIndexRoute: ManageSectionsIndexRoute,
@@ -140,9 +170,11 @@ const ManageRouteWithChildren =
   ManageRoute._addFileChildren(ManageRouteChildren)
 
 export interface FileRoutesByFullPath {
+  '/': typeof IndexRoute
   '': typeof ManageRouteWithChildren
   '/login': typeof LoginRoute
-  '/courses': typeof ManageCoursesRoute
+  '/courses': typeof ManageCoursesIndexRoute
+  '/dify-manage': typeof ManageDifyManageIndexRoute
   '/question-types': typeof ManageQuestionTypesIndexRoute
   '/questions': typeof ManageQuestionsIndexRoute
   '/sections': typeof ManageSectionsIndexRoute
@@ -150,9 +182,11 @@ export interface FileRoutesByFullPath {
 }
 
 export interface FileRoutesByTo {
+  '/': typeof IndexRoute
   '': typeof ManageRouteWithChildren
   '/login': typeof LoginRoute
-  '/courses': typeof ManageCoursesRoute
+  '/courses': typeof ManageCoursesIndexRoute
+  '/dify-manage': typeof ManageDifyManageIndexRoute
   '/question-types': typeof ManageQuestionTypesIndexRoute
   '/questions': typeof ManageQuestionsIndexRoute
   '/sections': typeof ManageSectionsIndexRoute
@@ -161,9 +195,11 @@ export interface FileRoutesByTo {
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
+  '/': typeof IndexRoute
   '/_manage': typeof ManageRouteWithChildren
   '/login': typeof LoginRoute
-  '/_manage/courses': typeof ManageCoursesRoute
+  '/_manage/courses/': typeof ManageCoursesIndexRoute
+  '/_manage/dify-manage/': typeof ManageDifyManageIndexRoute
   '/_manage/question-types/': typeof ManageQuestionTypesIndexRoute
   '/_manage/questions/': typeof ManageQuestionsIndexRoute
   '/_manage/sections/': typeof ManageSectionsIndexRoute
@@ -173,27 +209,33 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
+    | '/'
     | ''
     | '/login'
     | '/courses'
+    | '/dify-manage'
     | '/question-types'
     | '/questions'
     | '/sections'
     | '/users'
   fileRoutesByTo: FileRoutesByTo
   to:
+    | '/'
     | ''
     | '/login'
     | '/courses'
+    | '/dify-manage'
     | '/question-types'
     | '/questions'
     | '/sections'
     | '/users'
   id:
     | '__root__'
+    | '/'
     | '/_manage'
     | '/login'
-    | '/_manage/courses'
+    | '/_manage/courses/'
+    | '/_manage/dify-manage/'
     | '/_manage/question-types/'
     | '/_manage/questions/'
     | '/_manage/sections/'
@@ -202,11 +244,13 @@ export interface FileRouteTypes {
 }
 
 export interface RootRouteChildren {
+  IndexRoute: typeof IndexRoute
   ManageRoute: typeof ManageRouteWithChildren
   LoginRoute: typeof LoginRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
+  IndexRoute: IndexRoute,
   ManageRoute: ManageRouteWithChildren,
   LoginRoute: LoginRoute,
 }
@@ -221,14 +265,19 @@ export const routeTree = rootRoute
     "__root__": {
       "filePath": "__root.tsx",
       "children": [
+        "/",
         "/_manage",
         "/login"
       ]
     },
+    "/": {
+      "filePath": "index.tsx"
+    },
     "/_manage": {
       "filePath": "_manage.tsx",
       "children": [
-        "/_manage/courses",
+        "/_manage/courses/",
+        "/_manage/dify-manage/",
         "/_manage/question-types/",
         "/_manage/questions/",
         "/_manage/sections/",
@@ -238,8 +287,12 @@ export const routeTree = rootRoute
     "/login": {
       "filePath": "login.tsx"
     },
-    "/_manage/courses": {
-      "filePath": "_manage/courses.tsx",
+    "/_manage/courses/": {
+      "filePath": "_manage/courses/index.tsx",
+      "parent": "/_manage"
+    },
+    "/_manage/dify-manage/": {
+      "filePath": "_manage/dify-manage/index.tsx",
       "parent": "/_manage"
     },
     "/_manage/question-types/": {

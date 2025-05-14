@@ -10,11 +10,13 @@ import {
   ParseIntPipe,
   HttpCode,
   HttpStatus,
+  ValidationPipe,
 } from '@nestjs/common';
 import { CoursesService } from './courses.service';
 import { CreateCourseDto } from './dto/create-course.dto';
 import { UpdateCourseDto } from './dto/update-course.dto';
 import { FindCoursesQueryDto } from './dto/find-courses-query.dto';
+import { ToggleCourseStatusDto } from './dto/toggle-course-status.dto';
 
 @Controller('courses')
 export class CoursesController {
@@ -77,6 +79,14 @@ export class CoursesController {
   activate(@Param('id', ParseIntPipe) id: number) {
     // Ensure only admins can activate? Add specific guard if needed.
     return this.coursesService.activate(id);
+  }
+
+  @Patch(':id/toggle-status')
+  toggleStatus(
+    @Param('id', ParseIntPipe) id: number,
+    @Body(ValidationPipe) toggleCourseStatusDto: ToggleCourseStatusDto,
+  ) {
+    return this.coursesService.toggleStatus(id, toggleCourseStatusDto);
   }
 
   @Delete(':id')

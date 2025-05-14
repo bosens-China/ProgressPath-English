@@ -4,6 +4,7 @@ import { SectionsController } from 'backend-services/sections/sections.controlle
 import { Params } from 'ahooks/lib/useAntdTable/types';
 import { UpdateSectionDto } from 'backend-services/sections/dto/update-section.dto.js';
 import { FindSectionsQueryDto } from 'backend-services/sections/dto/find-sections-query.dto.js';
+import { UpdateSectionOrderDto } from 'backend-services/sections/dto/update-section-order.dto.js';
 
 // 批量添加小节
 export const addSections = async (body: CreateSectionDto[]) => {
@@ -46,12 +47,10 @@ export const updateSection = async (id: number, body: UpdateSectionDto) => {
 
 // 删除小节
 export const deleteSection = async (id: number) => {
-  const {
-    data: { data },
-  } = await request.delete<
+  await request.delete<
     GlobalApiTypes<ReturnType<SectionsController['remove']>>
   >(`/sections/${id}`);
-  return data;
+  return `删除小节成功`;
 };
 
 // 全部小节
@@ -62,5 +61,15 @@ export const sectionAll = async () => {
     await request.get<
       GlobalApiTypes<ReturnType<SectionsController['findAll']>>
     >(`/sections/all`);
+  return data;
+};
+
+// 批量更新排序
+export const updateSections = async (body: UpdateSectionOrderDto) => {
+  const {
+    data: { data },
+  } = await request.patch<
+    GlobalApiTypes<ReturnType<SectionsController['updateOrder']>>
+  >('/sections/batch/order', body);
   return data;
 };

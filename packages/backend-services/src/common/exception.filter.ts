@@ -16,6 +16,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
 
     let status = 500;
     let message = 'Internal server error';
+    console.warn(exception);
 
     if (exception instanceof BadRequestException) {
       const { message: msg } = exception.getResponse() as any;

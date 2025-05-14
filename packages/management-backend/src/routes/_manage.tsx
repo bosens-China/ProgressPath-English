@@ -71,6 +71,10 @@ function ManageLayout() {
             label: '用户管理',
             key: 'users',
           },
+          {
+            label: 'Dify 管理',
+            key: 'dify-manage',
+          },
         ],
       },
     ];
@@ -93,10 +97,7 @@ function ManageLayout() {
 
   return (
     <Layout style={{ minHeight: '100vh' }}>
-      <Sider collapsible>
-        <div className="h-8 m-4 bg-gray-700 text-white flex items-center justify-center">
-          Logo
-        </div>
+      <Sider>
         <Menu
           theme="dark"
           mode="inline"

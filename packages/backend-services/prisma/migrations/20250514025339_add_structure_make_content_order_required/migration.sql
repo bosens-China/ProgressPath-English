@@ -14,7 +14,7 @@ CREATE TABLE "admins" (
 CREATE TABLE "users" (
     "id" SERIAL NOT NULL,
     "phone" TEXT NOT NULL,
-    "nickname" TEXT,
+    "nickname" TEXT DEFAULT 'momo',
     "avatarUrl" TEXT,
     "registrationDate" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -50,7 +50,8 @@ CREATE TABLE "user_course_enrollments" (
 CREATE TABLE "course_sections" (
     "id" SERIAL NOT NULL,
     "title" TEXT NOT NULL,
-    "content" TEXT,
+    "content" TEXT NOT NULL,
+    "structure" JSONB NOT NULL,
     "order" INTEGER NOT NULL,
     "courseId" INTEGER NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -64,13 +65,13 @@ CREATE TABLE "section_questions" (
     "id" SERIAL NOT NULL,
     "questionText" TEXT NOT NULL,
     "options" JSONB,
-    "correctAnswer" TEXT NOT NULL,
+    "correctAnswer" TEXT,
     "explanation" TEXT,
-    "questionType" TEXT NOT NULL DEFAULT 'multiple_choice',
-    "order" INTEGER NOT NULL,
+    "order" INTEGER,
     "sectionId" INTEGER NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
+    "question_type_id" INTEGER NOT NULL,
 
     CONSTRAINT "section_questions_pkey" PRIMARY KEY ("id")
 );
@@ -95,6 +96,17 @@ CREATE TABLE "check_in_records" (
     "timestamp" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "check_in_records_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "question_types" (
+    "id" SERIAL NOT NULL,
+    "name" TEXT NOT NULL,
+    "description" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "question_types_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
@@ -133,6 +145,9 @@ CREATE INDEX "check_in_records_checkInDate_idx" ON "check_in_records"("checkInDa
 -- CreateIndex
 CREATE UNIQUE INDEX "check_in_records_userId_checkInDate_key" ON "check_in_records"("userId", "checkInDate");
 
+-- CreateIndex
+CREATE UNIQUE INDEX "question_types_name_key" ON "question_types"("name");
+
 -- AddForeignKey
 ALTER TABLE "user_course_enrollments" ADD CONSTRAINT "user_course_enrollments_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
@@ -141,6 +156,9 @@ ALTER TABLE "user_course_enrollments" ADD CONSTRAINT "user_course_enrollments_co
 
 -- AddForeignKey
 ALTER TABLE "course_sections" ADD CONSTRAINT "course_sections_courseId_fkey" FOREIGN KEY ("courseId") REFERENCES "courses"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "section_questions" ADD CONSTRAINT "section_questions_question_type_id_fkey" FOREIGN KEY ("question_type_id") REFERENCES "question_types"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "section_questions" ADD CONSTRAINT "section_questions_sectionId_fkey" FOREIGN KEY ("sectionId") REFERENCES "course_sections"("id") ON DELETE CASCADE ON UPDATE CASCADE;

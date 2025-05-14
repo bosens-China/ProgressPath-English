@@ -81,8 +81,9 @@ model UserCourseEnrollment {
 model CourseSection {
   id        Int      @id @default(autoincrement())
   title     String // 小节标题
-  content   String?  @db.Text // 小节内容，可能较长，使用 Text 类型
-  order     Int? // 小节在课程中的顺序, 修改为可选
+  content   String   @db.Text // 小节内容，设为必填
+  structure Json // 小节结构，使用JSON类型存储
+  order     Int // 小节在课程中的顺序, 设为必填
   courseId  Int // 外键，关联到 Course
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -166,4 +167,18 @@ model QuestionType {
   updatedAt   DateTime          @updatedAt
 
   @@map("question_types")
+}
+
+// 9. Dify管理 (新模型)
+model DifyManage {
+  id          Int      @id @default(autoincrement())
+  apiUrl      String // 接口地址
+  description String? // 描述信息 
+  token       String // 接口令牌
+  body        Json // 请求体参数(JSON)
+  headers     Json? // 请求头(JSON)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("dify_manages")
 }

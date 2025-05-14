@@ -23,6 +23,19 @@ export const getList = async (
   return data;
 };
 
+// 全部问题
+export const getAll = async (body?: FindQuestionsQueryDto) => {
+  const {
+    data: { data },
+  } = await request.get<
+    GlobalApiTypes<ReturnType<QuestionsController['findAll']>>
+  >('/questions/all', {
+    params: body,
+  });
+
+  return data;
+};
+
 // 新增问题
 export const addQuestion = async (body: CreateQuestionDto) => {
   const {
@@ -57,10 +70,8 @@ export const editQuestion = async (id: number, body: CreateQuestionDto) => {
 
 // 删除问题
 export const deleteQuestion = async (id: number) => {
-  const {
-    data: { data },
-  } = await request.delete<
+  await request.delete<
     GlobalApiTypes<ReturnType<QuestionsController['remove']>>
   >(`/questions/${id}`);
-  return data;
+  return `删除问题成功`;
 };

@@ -132,6 +132,16 @@ const UploadDialog = ({ resetList }: Props) => {
                 return e && e.fileList;
               }}
               rules={[{ required: true, message: '请上传CSV文件!' }]}
+              extra={
+                <div>
+                  完整的CSV文件包含以下列：
+                  <ul>
+                    <li>title: 标题（必填）</li>
+                    <li>content: 内容（必填）</li>
+                    <li>order: 排序（可选）</li>
+                  </ul>
+                </div>
+              }
             >
               <Upload
                 name="file"

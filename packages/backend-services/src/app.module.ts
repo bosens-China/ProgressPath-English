@@ -15,6 +15,7 @@ import { PictureBedModule } from './picture-bed/picture-bed.module';
 import { SectionsModule } from './sections/sections.module';
 import { QuestionsModule } from './questions/questions.module';
 import { QuestionTypesModule } from './question-types/question-types.module';
+import { DifyManageModule } from './dify-manage/dify-manage.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { QuestionTypesModule } from './question-types/question-types.module';
     SectionsModule,
     QuestionsModule,
     QuestionTypesModule,
+    DifyManageModule,
   ],
   controllers: [AppController],
   providers: [

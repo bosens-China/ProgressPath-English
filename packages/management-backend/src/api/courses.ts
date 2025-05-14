@@ -3,6 +3,7 @@ import { FindCoursesQueryDto } from 'backend-services/courses/dto/find-courses-q
 import { CoursesController } from 'backend-services/courses/courses.controller.js';
 import { Params } from 'ahooks/lib/useAntdTable/types';
 import { CreateCourseDto } from 'backend-services/courses/dto/create-course.dto.js';
+import { ToggleCourseStatusDto } from 'backend-services/courses/dto/toggle-course-status.dto.js';
 
 // 获取列表
 export const getList = async (
@@ -47,12 +48,10 @@ export const editCourse = async (id: number, body: CreateCourseDto) => {
 
 // 删除课程
 export const deleteCourse = async (id: number) => {
-  const {
-    data: { data },
-  } = await request.delete<
-    GlobalApiTypes<ReturnType<CoursesController['remove']>>
-  >(`/courses/${id}`);
-  return data;
+  await request.delete<GlobalApiTypes<ReturnType<CoursesController['remove']>>>(
+    `/courses/${id}`,
+  );
+  return `删除课程成功`;
 };
 
 // 全部课程，只包含id和title
@@ -63,5 +62,18 @@ export const getAllCourses = async () => {
     await request.get<
       GlobalApiTypes<ReturnType<CoursesController['findAllLite']>>
     >('/courses/all-lite');
+  return data;
+};
+
+// 启用停用课程
+export const toggleCourseStatus = async (
+  id: number,
+  body: ToggleCourseStatusDto,
+) => {
+  const {
+    data: { data },
+  } = await request.patch<
+    GlobalApiTypes<ReturnType<CoursesController['toggleStatus']>>
+  >(`/courses/${id}/toggle-status`, body);
   return data;
 };

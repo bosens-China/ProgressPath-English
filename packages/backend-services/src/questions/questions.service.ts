@@ -5,6 +5,7 @@ import { UpdateQuestionDto } from './dto/update-question.dto';
 import { FindQuestionsQueryDto } from './dto/find-questions-query.dto';
 import { Prisma, SectionQuestion } from '@prisma/client';
 import * as _ from 'lodash';
+import { UpdateQuestionOrderDto } from './dto/update-question-order.dto';
 
 @Injectable()
 export class QuestionsService {
@@ -17,7 +18,7 @@ export class QuestionsService {
    */
   async createMany(createQuestionDtos: CreateQuestionDto[]) {
     const dataToCreate = createQuestionDtos.map((dto) => {
-      const { order, questionTypeId, options, sectionId, ...rest } = dto;
+      const { questionTypeId, options, sectionId, ...rest } = dto;
       const mappedOptions = _.cond([
         [_.isUndefined.bind(null), () => undefined],
         [_.isNull.bind(null), () => Prisma.JsonNull],
@@ -27,7 +28,7 @@ export class QuestionsService {
         ...rest,
         sectionId,
         questionTypeId,
-        order: order === undefined ? null : order,
+        order: null,
         ...(mappedOptions !== undefined && { options: mappedOptions }),
       };
     });
@@ -211,7 +212,7 @@ export class QuestionsService {
   }
 
   /**
-   * @description ���除问题
+   * @description 删除问题
    * @param id 问题ID
    * @returns Promise<SectionQuestion>
    * @throws NotFoundException 如果问题未找到
@@ -258,5 +259,44 @@ export class QuestionsService {
         ...(mappedOptions !== undefined && { options: mappedOptions }),
       },
     });
+  }
+
+  /**
+   * @description 批量更新问题排序
+   * @param updateQuestionOrderDto 包含问题ID和顺序的数组
+   * @returns 返回更新成功的问题数量
+   */
+  async updateOrder(updateQuestionOrderDto: UpdateQuestionOrderDto) {
+    const { items } = updateQuestionOrderDto;
+
+    // 使用事务来确保所有更新操作都成功执行或全部回滚
+    await this.prisma.$transaction(async (tx) => {
+      // 第一步：将所有要更新的问题的order设置为负值（临时值）
+      // 以避免唯一约束冲突
+      await Promise.all(
+        items.map((item) =>
+          tx.sectionQuestion.update({
+            where: { id: item.id },
+            data: { order: -item.order - 1000000 }, // 使用一个足够小的负数作为临时值
+          }),
+        ),
+      );
+
+      // 第二步：设置最终的order值
+      await Promise.all(
+        items.map((item) =>
+          tx.sectionQuestion.update({
+            where: { id: item.id },
+            data: { order: item.order },
+          }),
+        ),
+      );
+    });
+
+    return {
+      success: true,
+      updatedCount: items.length,
+      message: `成功更新了 ${items.length} 个问题的排序`,
+    };
   }
 }
