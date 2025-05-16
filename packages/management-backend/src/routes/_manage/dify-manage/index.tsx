@@ -8,7 +8,6 @@ import {
   Space,
   Table,
   TableProps,
-  Tag,
 } from 'antd';
 import { useList } from '@/hooks/use-list';
 import { useAntdTable, useRequest } from 'ahooks';
@@ -51,6 +50,12 @@ function RouteComponent() {
   const columns: TableProps<DifyManage>['columns'] = [
     { title: 'ID', dataIndex: 'id', width: 60 },
     {
+      title: '名称',
+      dataIndex: 'name',
+      key: 'name',
+      ellipsis: true,
+    },
+    {
       title: '描述',
       dataIndex: 'description',
       key: 'description',
@@ -62,17 +67,7 @@ function RouteComponent() {
       key: 'apiUrl',
       ellipsis: true,
     },
-    {
-      title: 'Token',
-      dataIndex: 'token',
-      key: 'token',
-      ellipsis: true,
-      render: (text) => (
-        <Tag color="geekblue">
-          {text ? text.slice(0, 10) + '...' : '未设置'}
-        </Tag>
-      ),
-    },
+
     {
       title: '创建时间',
       dataIndex: 'createdAt',
@@ -138,6 +133,9 @@ function RouteComponent() {
     <div>
       <div className="flex mb-4">
         <Form className="flex-1" layout="inline" form={form}>
+          <Form.Item<FindDifyManageQueryDto> name="name">
+            <Input className="w-40!" placeholder="请输入筛选的名称"></Input>
+          </Form.Item>
           <Form.Item<FindDifyManageQueryDto> name="description">
             <Input className="w-40!" placeholder="请输入筛选的描述"></Input>
           </Form.Item>

@@ -86,14 +86,16 @@ export const deleteDifyManage = async (id: number) => {
   return `删除成功`;
 };
 
-// /**
-//  * 测试Dify接口
-//  */
-// export const testDifyConnection = async (id: number, message: string) => {
-//    await request.post<
-//    GlobalApiTypes<ReturnType<DifyManageController['proxy']>>
-//    >(`dify-manage/proxy/${id}`, {
-//     query: message,
-//     user: 'admin',
-//   });
-// };
+/**
+ * 测试Dify接口
+ * @param id Dify配置ID
+ * @param inputs 可选的输入参数
+ */
+export const testDifyConnection = async (
+  id: number,
+
+  inputs?: Record<string, string>,
+) => {
+  const { data } = await request.post(`dify-manage/${id}`, inputs);
+  return data;
+};

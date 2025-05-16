@@ -11,11 +11,16 @@ import {
   HttpCode,
   HttpStatus,
   ValidationPipe,
+  All,
+  Req,
+  Res,
 } from '@nestjs/common';
 import { DifyManageService } from './dify-manage.service';
 import { CreateDifyManageDto } from './dto/create-dify-manage.dto';
 import { UpdateDifyManageDto } from './dto/update-dify-manage.dto';
 import { FindDifyManageQueryDto } from './dto/find-dify-manage-query.dto';
+import { Request, Response } from 'express';
+import { PublicResponse } from '#s/common/decorators/public-response.decorator';
 
 @Controller('dify-manage')
 export class DifyManageController {
@@ -79,5 +84,18 @@ export class DifyManageController {
   @HttpCode(HttpStatus.OK)
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.difyManageService.remove(id);
+  }
+
+  /**
+   * @description 调用Dify接口的代理方法
+   */
+  @PublicResponse()
+  @All('/proxy/:id')
+  proxy(
+    @Param('id', ParseIntPipe) id: number,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    return this.difyManageService.proxyRequest(id, req, res);
   }
 }

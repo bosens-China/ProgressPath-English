@@ -172,10 +172,11 @@ model QuestionType {
 // 9. Dify管理 (新模型)
 model DifyManage {
   id          Int      @id @default(autoincrement())
+  name        String // 名称
   apiUrl      String // 接口地址
   description String? // 描述信息 
   token       String // 接口令牌
-  body        Json // 请求体参数(JSON)
+  body        Json? // 请求体参数(JSON)
   headers     Json? // 请求头(JSON)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt

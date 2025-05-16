@@ -4,6 +4,8 @@ import { CreateDifyManageDto } from './dto/create-dify-manage.dto';
 import { UpdateDifyManageDto } from './dto/update-dify-manage.dto';
 import { FindDifyManageQueryDto } from './dto/find-dify-manage-query.dto';
 import { DifyManage, Prisma } from '@prisma/client';
+import { Request, Response } from 'express';
+import * as _ from 'lodash';
 
 @Injectable()
 export class DifyManageService {
@@ -16,7 +18,7 @@ export class DifyManageService {
    */
   async create(createDifyManageDto: CreateDifyManageDto): Promise<DifyManage> {
     return this.prisma.difyManage.create({
-      data: createDifyManageDto,
+      data: createDifyManageDto as any,
     });
   }
 
@@ -28,30 +30,31 @@ export class DifyManageService {
   async findAllPaginated(
     query: FindDifyManageQueryDto,
   ): Promise<{ total: number; list: DifyManage[] }> {
-    const { current = 1, pageSize = 10, description, apiUrl } = query;
-    const skip = (current - 1) * pageSize;
+    const { current = 1, pageSize = 10, description, apiUrl, name } = query;
 
     const where: Prisma.DifyManageWhereInput = {};
 
     if (description) {
-      where.description = { contains: description, mode: 'insensitive' };
+      where.description = { contains: description };
     }
 
     if (apiUrl) {
-      where.apiUrl = { contains: apiUrl, mode: 'insensitive' };
+      where.apiUrl = { contains: apiUrl };
     }
 
-    const [list, total] = await this.prisma.$transaction([
-      this.prisma.difyManage.findMany({
-        where,
-        skip,
-        take: pageSize,
-        orderBy: { createdAt: 'desc' },
-      }),
-      this.prisma.difyManage.count({ where }),
-    ]);
+    if (name) {
+      where.name = { contains: name };
+    }
 
-    return { total, list };
+    const list = await this.prisma.difyManage.findMany({
+      where,
+      skip: (current - 1) * pageSize,
+      take: pageSize,
+    });
+
+    const total = await this.prisma.difyManage.count({ where });
+
+    return { list, total };
   }
 
   /**
@@ -60,7 +63,7 @@ export class DifyManageService {
    */
   async findAll(): Promise<DifyManage[]> {
     return this.prisma.difyManage.findMany({
-      orderBy: { createdAt: 'desc' },
+      orderBy: { id: 'asc' },
     });
   }
 
@@ -76,9 +79,8 @@ export class DifyManageService {
     });
 
     if (!difyManage) {
-      throw new NotFoundException(`ID为 ${id} 的Dify管理未找到`);
+      throw new NotFoundException(`Dify管理 #${id} 不存在`);
     }
-
     return difyManage;
   }
 
@@ -93,20 +95,13 @@ export class DifyManageService {
     id: number,
     updateDifyManageDto: UpdateDifyManageDto,
   ): Promise<DifyManage> {
-    try {
-      return await this.prisma.difyManage.update({
-        where: { id },
-        data: updateDifyManageDto,
-      });
-    } catch (error) {
-      if (
-        error instanceof Prisma.PrismaClientKnownRequestError &&
-        error.code === 'P2025'
-      ) {
-        throw new NotFoundException(`ID为 ${id} 的Dify管理未找到`);
-      }
-      throw error;
-    }
+    // 先检查是否存在
+    await this.findOne(id);
+
+    return await this.prisma.difyManage.update({
+      where: { id },
+      data: updateDifyManageDto as any,
+    });
   }
 
   /**
@@ -116,18 +111,102 @@ export class DifyManageService {
    * @throws NotFoundException 如果未找到
    */
   async remove(id: number): Promise<DifyManage> {
-    try {
-      return await this.prisma.difyManage.delete({
-        where: { id },
-      });
-    } catch (error) {
-      if (
-        error instanceof Prisma.PrismaClientKnownRequestError &&
-        error.code === 'P2025'
-      ) {
-        throw new NotFoundException(`ID为 ${id} 的Dify管理未找到`);
+    // 先检查是否存在
+    await this.findOne(id);
+
+    return await this.prisma.difyManage.delete({
+      where: { id },
+    });
+  }
+
+  /**
+   * @description 处理代理请求
+   * @param id Dify管理ID
+   * @param req 请求对象
+   * @param res 响应对象
+   */
+  async proxyRequest(id: number, req: Request, res: Response): Promise<void> {
+    const difyManage = await this.findOne(id);
+    if (!difyManage || !difyManage.apiUrl) {
+      res.status(404).send('Dify 接口不存在');
+      return;
+    }
+    // 终止标识符
+    let isAborted = false;
+    /*
+     * 对body参数进行检查，以及合并
+     */
+
+    const reqBody = _.isObjectLike(req.body) ? req.body : {};
+    const body = Object.entries(difyManage.body || {}).reduce(
+      (obj, [key, value]) => {
+        if (_.isString(value) && value.startsWith('$')) {
+          // 检查是否存在，如果不存在直接结束
+          if (!reqBody[value]) {
+            isAborted = true;
+            res.status(400).send(`请求参数 ${value} 不存在`);
+          } else {
+            obj[key] = reqBody[value];
+          }
+          return obj;
+        }
+        obj[key] = value;
+
+        return obj;
+      },
+      {} as Record<string, any>,
+    );
+    if (isAborted) {
+      return;
+    }
+
+    const proxyRes = await fetch(difyManage.apiUrl, {
+      method: req.method || 'POST',
+      headers: {
+        ...((difyManage.headers as any) || {}),
+        accept: 'text/event-stream, application/json',
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${difyManage.token}`,
+      },
+      body: JSON.stringify(body),
+    });
+
+    const contentType = proxyRes.headers.get('content-type') || '';
+
+    if (contentType.includes('text/event-stream')) {
+      res.setHeader('Content-Type', 'text/event-stream');
+      res.setHeader('Cache-Control', 'no-cache');
+      res.setHeader('Connection', 'keep-alive');
+      res.flushHeaders();
+
+      // ✅ 将 Web ReadableStream 转为 Node.js Stream
+      const webStream = proxyRes.body;
+      if (webStream) {
+        const reader = webStream.getReader();
+
+        const push = async () => {
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            res.write(value);
+          }
+          res.end();
+        };
+
+        push().catch((e) => {
+          console.error('Stream error', e);
+          res.end();
+        });
+      } else {
+        res.end();
       }
-      throw error;
+    } else {
+      res.setHeader('Content-Type', contentType);
+      res.status(proxyRes.status);
+
+      const arrayBuffer = await proxyRes.arrayBuffer();
+      const buffer = Buffer.from(arrayBuffer);
+      res.send(buffer);
     }
   }
 }

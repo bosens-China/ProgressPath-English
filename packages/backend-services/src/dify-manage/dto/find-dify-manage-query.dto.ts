@@ -19,6 +19,10 @@ export class FindDifyManageQueryDto {
 
   @IsOptional()
   @IsString()
+  name?: string;
+
+  @IsOptional()
+  @IsString()
   description?: string;
 
   @IsOptional()
